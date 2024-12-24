@@ -1,0 +1,150 @@
+2024-11-12 16:39:04,324 || INFO || 读取到 9 个类别
+2024-11-12 16:39:04,324 || INFO || 读取到 1 个工作表
+2024-11-12 16:39:08,990 || ERROR || 第1次尝试启动WebDriver失败: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location C:\Program Files\Google\Chrome\Application\chrome.exe is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B6EA]
+	(No symbol) [0x00007FF6519D6B91]
+	(No symbol) [0x00007FF6519D268E]
+	(No symbol) [0x00007FF651A232E0]
+	(No symbol) [0x00007FF651A22970]
+	(No symbol) [0x00007FF651A172A3]
+	(No symbol) [0x00007FF6519E12DF]
+	(No symbol) [0x00007FF6519E2451]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651AE92B4]
+	(No symbol) [0x00007FF651AE9450]
+	(No symbol) [0x00007FF651AD81FF]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 16:39:19,290 || ERROR || 第2次尝试启动WebDriver失败: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location C:\Program Files\Google\Chrome\Application\chrome.exe is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B6EA]
+	(No symbol) [0x00007FF6519D6B91]
+	(No symbol) [0x00007FF6519D268E]
+	(No symbol) [0x00007FF651A232E0]
+	(No symbol) [0x00007FF651A22970]
+	(No symbol) [0x00007FF651A172A3]
+	(No symbol) [0x00007FF6519E12DF]
+	(No symbol) [0x00007FF6519E2451]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651AE92B4]
+	(No symbol) [0x00007FF651AE9450]
+	(No symbol) [0x00007FF651AD81FF]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 16:39:28,250 || ERROR || 第3次尝试启动WebDriver失败: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location C:\Program Files\Google\Chrome\Application\chrome.exe is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B6EA]
+	(No symbol) [0x00007FF6519D6B91]
+	(No symbol) [0x00007FF6519D268E]
+	(No symbol) [0x00007FF651A232E0]
+	(No symbol) [0x00007FF651A22970]
+	(No symbol) [0x00007FF651A172A3]
+	(No symbol) [0x00007FF6519E12DF]
+	(No symbol) [0x00007FF6519E2451]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651AE92B4]
+	(No symbol) [0x00007FF651AE9450]
+	(No symbol) [0x00007FF651AD81FF]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 16:39:28,253 || ERROR || 程序执行出错: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location C:\Program Files\Google\Chrome\Application\chrome.exe is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B6EA]
+	(No symbol) [0x00007FF6519D6B91]
+	(No symbol) [0x00007FF6519D268E]
+	(No symbol) [0x00007FF651A232E0]
+	(No symbol) [0x00007FF651A22970]
+	(No symbol) [0x00007FF651A172A3]
+	(No symbol) [0x00007FF6519E12DF]
+	(No symbol) [0x00007FF6519E2451]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651AE92B4]
+	(No symbol) [0x00007FF651AE9450]
+	(No symbol) [0x00007FF651AD81FF]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 16:39:28,262 || ERROR || Traceback (most recent call last):
+  File "f:\Pythone Projects\AliProductsImport\main.py", line 1045, in main
+    with open_browser() as driver:
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python312\Lib\contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "f:\Pythone Projects\AliProductsImport\main.py", line 78, in open_browser
+    driver = webdriver.Chrome(service=service, options=options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\Pythone Projects\AliProductsImport\.venv\Lib\site-packages\selenium\webdriver\chrome\webdriver.py", line 45, in __init__
+    super().__init__(
+  File "F:\Pythone Projects\AliProductsImport\.venv\Lib\site-packages\selenium\webdriver\chromium\webdriver.py", line 66, in __init__
+    super().__init__(command_executor=executor, options=options)
+  File "F:\Pythone Projects\AliProductsImport\.venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py", line 208, in __init__
+    self.start_session(capabilities)
+  File "F:\Pythone Projects\AliProductsImport\.venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py", line 292, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\Pythone Projects\AliProductsImport\.venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py", line 347, in execute
+    self.error_handler.check_response(response)
+  File "F:\Pythone Projects\AliProductsImport\.venv\Lib\site-packages\selenium\webdriver\remote\errorhandler.py", line 229, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location C:\Program Files\Google\Chrome\Application\chrome.exe is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B6EA]
+	(No symbol) [0x00007FF6519D6B91]
+	(No symbol) [0x00007FF6519D268E]
+	(No symbol) [0x00007FF651A232E0]
+	(No symbol) [0x00007FF651A22970]
+	(No symbol) [0x00007FF651A172A3]
+	(No symbol) [0x00007FF6519E12DF]
+	(No symbol) [0x00007FF6519E2451]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651AE92B4]
+	(No symbol) [0x00007FF651AE9450]
+	(No symbol) [0x00007FF651AD81FF]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+

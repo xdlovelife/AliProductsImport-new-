@@ -1,0 +1,126 @@
+2024-11-12 17:33:32,919 || INFO || 读取到 9 个类别
+2024-11-12 17:33:32,974 || INFO || 读取到 1 个工作表
+2024-11-12 17:33:36,457 || INFO || Chrome WebDriver启动成功
+2024-11-12 17:33:36,469 || INFO || 开始处理类别: Pet pad
+2024-11-12 17:33:42,144 || INFO || 输入搜索关键词: Pet pad
+2024-11-12 17:33:53,981 || INFO || 点击搜索按钮
+2024-11-12 17:33:54,395 || INFO || 开始加载更多产品...
+2024-11-12 17:34:18,168 || INFO || 没有更多产品可加载
+2024-11-12 17:34:18,204 || INFO || 找到 48 个产品
+2024-11-12 17:34:18,204 || INFO || 处理第 1/48 个产品
+2024-11-12 17:34:20,266 || INFO || 产品标题: Luxury 6 layer absorbent waterproof disposable training pet puppy dogs pee pads for dogs
+2024-11-12 17:34:30,090 || INFO || 点击了Add to Import List按钮
+2024-11-12 17:34:32,259 || INFO || 选择Draft状态
+2024-11-12 17:34:32,884 || INFO || 打开类别选择
+2024-11-12 17:34:32,886 || INFO || 开始处理类别选择: Pet Beds
+2024-11-12 17:34:32,921 || INFO || 下拉菜单区域已加载
+2024-11-12 17:34:33,469 || INFO || 搜索框输入完成: pet beds
+2024-11-12 17:34:34,480 || INFO || 成功选择类别: Pet Beds
+2024-11-12 17:34:43,119 || INFO || 点击Add to Store按钮
+2024-11-12 17:34:43,137 || INFO || 等待状态更新...
+2024-11-12 17:35:13,504 || INFO || 等待状态更新...
+2024-11-12 17:36:43,494 || INFO || 等待状态更新...
+2024-11-12 17:37:13,826 || INFO || 等待状态更新...
+2024-11-12 17:38:05,448 || ERROR || 处理产品时出错: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=130.0.6723.117)
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B6EA]
+	(No symbol) [0x00007FF65196FCD5]
+	(No symbol) [0x00007FF651A1F167]
+	(No symbol) [0x00007FF651A381A1]
+	(No symbol) [0x00007FF651A172A3]
+	(No symbol) [0x00007FF6519E12DF]
+	(No symbol) [0x00007FF6519E2451]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651AE92B4]
+	(No symbol) [0x00007FF651AE9450]
+	(No symbol) [0x00007FF651AD81FF]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 17:38:05,464 || ERROR || 处理产品详情页时发生错误: Message: disconnected: not connected to DevTools
+  (failed to check if window was closed: disconnected: not connected to DevTools)
+  (Session info: chrome=130.0.6723.117)
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B6EA]
+	(No symbol) [0x00007FF651981515]
+	(No symbol) [0x00007FF6519825AF]
+	(No symbol) [0x00007FF65199BD03]
+	(No symbol) [0x00007FF65196F7BD]
+	(No symbol) [0x00007FF651A27BBF]
+	(No symbol) [0x00007FF651A174C0]
+	(No symbol) [0x00007FF6519E12DF]
+	(No symbol) [0x00007FF6519E2451]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651AE92B4]
+	(No symbol) [0x00007FF651AE9450]
+	(No symbol) [0x00007FF651AD81FF]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 17:38:05,467 || ERROR || 处理产品详情时出错: name 'close_tab' is not defined
+2024-11-12 17:38:05,483 || ERROR || 无法返回到产品列表页
+2024-11-12 17:38:05,483 || INFO || 类别 Pet pad 处理完成，成功导入 0 个产品
+2024-11-12 17:38:05,484 || WARNING || 会话失效，尝试重新创建浏览器实例
+2024-11-12 17:38:05,486 || WARNING || 检测到无效会话，尝试重新创建浏览器实例
+2024-11-12 17:38:09,338 || INFO || 开始处理类别: Pet sofa
+2024-11-12 17:38:10,393 || ERROR || 等待元素时出错: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=130.0.6723.117)
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B6EA]
+	(No symbol) [0x00007FF65196FCD5]
+	(No symbol) [0x00007FF651A1F167]
+	(No symbol) [0x00007FF651A381A1]
+	(No symbol) [0x00007FF651A172A3]
+	(No symbol) [0x00007FF6519E12DF]
+	(No symbol) [0x00007FF6519E2451]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651AE92B4]
+	(No symbol) [0x00007FF651AE9450]
+	(No symbol) [0x00007FF651AD81FF]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 17:38:10,398 || ERROR || 无法找到搜索框
+2024-11-12 17:38:10,398 || INFO || 类别 Pet sofa 处理完成，成功导入 0 个产品
+2024-11-12 17:38:10,400 || WARNING || 会话失效，尝试重新创建浏览器实例
+2024-11-12 17:38:10,401 || WARNING || 检测到无效会话，尝试重新创建浏览器实例
+2024-11-12 17:38:18,261 || INFO || 开始处理类别: Pet hammock
+2024-11-12 17:38:23,925 || INFO || 输入搜索关键词: Pet hammock
+2024-11-12 17:38:35,174 || INFO || 点击搜索按钮
+2024-11-12 17:38:35,801 || INFO || 开始加载更多产品...
+2024-11-12 17:38:52,302 || INFO || 没有更多产品可加载
+2024-11-12 17:38:52,331 || INFO || 找到 48 个产品
+2024-11-12 17:38:52,331 || INFO || 处理第 1/48 个产品
+2024-11-12 17:38:54,554 || INFO || 产品标题: wholesale spot hanging cat bed window perch hammock for cats window
+2024-11-12 17:39:04,326 || INFO || 点击了Add to Import List按钮
+2024-11-12 17:39:06,830 || INFO || 选择Draft状态
+2024-11-12 17:39:07,537 || INFO || 打开类别选择
+2024-11-12 17:39:07,539 || INFO || 开始处理类别选择: Pet Beds
+2024-11-12 17:39:07,581 || INFO || 下拉菜单区域已加载
+2024-11-12 17:39:08,122 || INFO || 搜索框输入完成: pet beds
+2024-11-12 17:39:09,133 || INFO || 成功选择类别: Pet Beds
+2024-11-12 17:39:18,000 || INFO || 点击Add to Store按钮
+2024-11-12 17:39:18,019 || INFO || 等待状态更新...
+2024-11-12 17:39:48,408 || INFO || 等待状态更新...
+2024-11-12 17:40:18,915 || INFO || 等待状态更新...

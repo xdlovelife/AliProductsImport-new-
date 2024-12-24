@@ -1,0 +1,194 @@
+2024-11-12 15:54:49,369 || INFO || 读取到 9 个类别
+2024-11-12 15:54:49,369 || INFO || 读取到 1 个工作表
+2024-11-12 15:54:51,201 || INFO || Chrome WebDriver启动成功
+2024-11-12 15:54:51,202 || INFO || 开始处理类别: Pet pad
+2024-11-12 15:54:59,199 || INFO || 输入搜索关键词: Pet pad
+2024-11-12 15:55:10,650 || INFO || 点击搜索按钮
+2024-11-12 15:55:11,104 || INFO || 开始加载更多产品...
+2024-11-12 15:55:34,773 || INFO || 没有更多产品可加载
+2024-11-12 15:55:34,795 || INFO || 找到 48 个产品
+2024-11-12 15:55:34,795 || INFO || 处理第 1/48 个产品
+2024-11-12 15:55:36,961 || INFO || 产品标题: Luxury 6 layer absorbent waterproof disposable training pet puppy dogs pee pads for dogs
+2024-11-12 15:55:47,095 || INFO || 点击Add to Import List按钮
+2024-11-12 15:55:59,785 || INFO || 选择Draft状态
+2024-11-12 15:56:02,849 || ERROR || 选择类别时出错: name 'fetch_dropdown_options' is not defined
+2024-11-12 15:56:03,023 || ERROR || 处理产品详情时出错: 类别选择失败
+2024-11-12 15:56:03,421 || ERROR || 无法返回到产品列表页
+2024-11-12 15:56:03,422 || INFO || 类别 Pet pad 处理完成，成功导入 0 个产品
+2024-11-12 15:56:03,422 || INFO || 开始处理类别: Pet sofa
+2024-11-12 15:56:03,423 || ERROR || 处理类别时出错: Message: invalid session id
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B519]
+	(No symbol) [0x00007FF6519E0424]
+	(No symbol) [0x00007FF651A173A9]
+	(No symbol) [0x00007FF651A10ED8]
+	(No symbol) [0x00007FF651A100CA]
+	(No symbol) [0x00007FF651963D75]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651962837]
+	GetHandleVerifier [0x00007FF651F4AB98+4071784]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 15:56:03,432 || INFO || 类别 Pet sofa 处理完成，成功导入 0 个产品
+2024-11-12 15:56:03,433 || INFO || 开始处理类别: Pet hammock
+2024-11-12 15:56:03,435 || ERROR || 处理类别时出错: Message: invalid session id
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B519]
+	(No symbol) [0x00007FF6519E0424]
+	(No symbol) [0x00007FF651A173A9]
+	(No symbol) [0x00007FF651A10ED8]
+	(No symbol) [0x00007FF651A100CA]
+	(No symbol) [0x00007FF651963D75]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651962837]
+	GetHandleVerifier [0x00007FF651F4AB98+4071784]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 15:56:03,443 || INFO || 类别 Pet hammock 处理完成，成功导入 0 个产品
+2024-11-12 15:56:03,443 || INFO || 开始处理类别: Foldable pet bed
+2024-11-12 15:56:03,446 || ERROR || 处理类别时出错: Message: invalid session id
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B519]
+	(No symbol) [0x00007FF6519E0424]
+	(No symbol) [0x00007FF651A173A9]
+	(No symbol) [0x00007FF651A10ED8]
+	(No symbol) [0x00007FF651A100CA]
+	(No symbol) [0x00007FF651963D75]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651962837]
+	GetHandleVerifier [0x00007FF651F4AB98+4071784]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 15:56:03,453 || INFO || 类别 Foldable pet bed 处理完成，成功导入 0 个产品
+2024-11-12 15:56:03,453 || INFO || 开始处理类别: Waterproof pet bed
+2024-11-12 15:56:03,455 || ERROR || 处理类别时出错: Message: invalid session id
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B519]
+	(No symbol) [0x00007FF6519E0424]
+	(No symbol) [0x00007FF651A173A9]
+	(No symbol) [0x00007FF651A10ED8]
+	(No symbol) [0x00007FF651A100CA]
+	(No symbol) [0x00007FF651963D75]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651962837]
+	GetHandleVerifier [0x00007FF651F4AB98+4071784]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 15:56:03,463 || INFO || 类别 Waterproof pet bed 处理完成，成功导入 0 个产品
+2024-11-12 15:56:03,463 || INFO || 开始处理类别: pet tent
+2024-11-12 15:56:03,479 || ERROR || 处理类别时出错: Message: invalid session id
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B519]
+	(No symbol) [0x00007FF6519E0424]
+	(No symbol) [0x00007FF651A173A9]
+	(No symbol) [0x00007FF651A10ED8]
+	(No symbol) [0x00007FF651A100CA]
+	(No symbol) [0x00007FF651963D75]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651962837]
+	GetHandleVerifier [0x00007FF651F4AB98+4071784]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 15:56:03,487 || INFO || 类别 pet tent 处理完成，成功导入 0 个产品
+2024-11-12 15:56:03,487 || INFO || 开始处理类别: Insulated pet bed
+2024-11-12 15:56:03,492 || ERROR || 处理类别时出错: Message: invalid session id
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B519]
+	(No symbol) [0x00007FF6519E0424]
+	(No symbol) [0x00007FF651A173A9]
+	(No symbol) [0x00007FF651A10ED8]
+	(No symbol) [0x00007FF651A100CA]
+	(No symbol) [0x00007FF651963D75]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651962837]
+	GetHandleVerifier [0x00007FF651F4AB98+4071784]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 15:56:03,499 || INFO || 类别 Insulated pet bed 处理完成，成功导入 0 个产品
+2024-11-12 15:56:03,500 || INFO || 开始处理类别: Pet cooling mat
+2024-11-12 15:56:03,502 || ERROR || 处理类别时出错: Message: invalid session id
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B519]
+	(No symbol) [0x00007FF6519E0424]
+	(No symbol) [0x00007FF651A173A9]
+	(No symbol) [0x00007FF651A10ED8]
+	(No symbol) [0x00007FF651A100CA]
+	(No symbol) [0x00007FF651963D75]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651962837]
+	GetHandleVerifier [0x00007FF651F4AB98+4071784]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 15:56:03,511 || INFO || 类别 Pet cooling mat 处理完成，成功导入 0 个产品
+2024-11-12 15:56:03,511 || INFO || 开始处理类别: Pet crate with bed
+2024-11-12 15:56:03,513 || ERROR || 处理类别时出错: Message: invalid session id
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B519]
+	(No symbol) [0x00007FF6519E0424]
+	(No symbol) [0x00007FF651A173A9]
+	(No symbol) [0x00007FF651A10ED8]
+	(No symbol) [0x00007FF651A100CA]
+	(No symbol) [0x00007FF651963D75]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651962837]
+	GetHandleVerifier [0x00007FF651F4AB98+4071784]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 15:56:03,520 || INFO || 类别 Pet crate with bed 处理完成，成功导入 0 个产品
+2024-11-12 15:56:03,521 || INFO || 所有类别处理完成，总共成功导入 0 个产品

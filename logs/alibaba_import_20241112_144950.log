@@ -1,0 +1,358 @@
+2024-11-12 14:49:56,010 || INFO || Chrome WebDriver启动成功
+2024-11-12 14:49:56,284 || INFO || 开始处理类别: Dog house
+2024-11-12 14:50:16,606 || INFO || 找到 48 个产品
+2024-11-12 14:50:16,642 || INFO || 处理产品: Customized Pet Houses Furniture Wood Bed Luxury Wooden Pet House Cat Dog Solid Wood Dog House Indoor
+2024-11-12 14:50:44,513 || ERROR || 选择类别时出错: Message: stale element reference: stale element not found in the current frame
+  (Session info: chrome=130.0.6723.117); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#stale-element-reference-exception
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B6EA]
+	(No symbol) [0x00007FF6519A22BE]
+	(No symbol) [0x00007FF6519A4974]
+	(No symbol) [0x00007FF651A39B80]
+	(No symbol) [0x00007FF651A174FA]
+	(No symbol) [0x00007FF651A388A3]
+	(No symbol) [0x00007FF651A172A3]
+	(No symbol) [0x00007FF6519E12DF]
+	(No symbol) [0x00007FF6519E2451]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651AE92B4]
+	(No symbol) [0x00007FF651AE9450]
+	(No symbol) [0x00007FF651AD81FF]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 14:50:44,518 || ERROR || 导入产品时出错: Message: stale element reference: stale element not found in the current frame
+  (Session info: chrome=130.0.6723.117); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#stale-element-reference-exception
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B6EA]
+	(No symbol) [0x00007FF6519A22BE]
+	(No symbol) [0x00007FF6519A4974]
+	(No symbol) [0x00007FF651A39B80]
+	(No symbol) [0x00007FF651A174FA]
+	(No symbol) [0x00007FF651A388A3]
+	(No symbol) [0x00007FF651A172A3]
+	(No symbol) [0x00007FF6519E12DF]
+	(No symbol) [0x00007FF6519E2451]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651AE92B4]
+	(No symbol) [0x00007FF651AE9450]
+	(No symbol) [0x00007FF651AD81FF]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 14:50:44,879 || INFO || 处理产品: Hot Sale Removable Rainproof Plastic Big Pet Kennel Indoor Elevated Large Dog House For Big Dog
+2024-11-12 14:50:53,895 || ERROR || 处理产品详情时出错: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=130.0.6723.117)
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B6EA]
+	(No symbol) [0x00007FF65196FCD5]
+	(No symbol) [0x00007FF651A1F167]
+	(No symbol) [0x00007FF651A381A1]
+	(No symbol) [0x00007FF651A172A3]
+	(No symbol) [0x00007FF6519E12DF]
+	(No symbol) [0x00007FF6519E2451]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651AE92B4]
+	(No symbol) [0x00007FF651AE9450]
+	(No symbol) [0x00007FF651AD81FF]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 14:50:53,901 || ERROR || 关闭标签页时出错: Message: disconnected: not connected to DevTools
+  (failed to check if window was closed: disconnected: not connected to DevTools)
+  (Session info: chrome=130.0.6723.117)
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B6EA]
+	(No symbol) [0x00007FF651981515]
+	(No symbol) [0x00007FF6519825AF]
+	(No symbol) [0x00007FF65199BD03]
+	(No symbol) [0x00007FF65196F7BD]
+	(No symbol) [0x00007FF651A277B7]
+	(No symbol) [0x00007FF651A174C0]
+	(No symbol) [0x00007FF6519E12DF]
+	(No symbol) [0x00007FF6519E2451]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651AE92B4]
+	(No symbol) [0x00007FF651AE9450]
+	(No symbol) [0x00007FF651AD81FF]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 14:50:53,910 || ERROR || 搜索和处理产品时出错: Message: disconnected: not connected to DevTools
+  (failed to check if window was closed: disconnected: not connected to DevTools)
+  (Session info: chrome=130.0.6723.117)
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B6EA]
+	(No symbol) [0x00007FF651981515]
+	(No symbol) [0x00007FF6519825AF]
+	(No symbol) [0x00007FF65199BD03]
+	(No symbol) [0x00007FF65196F7BD]
+	(No symbol) [0x00007FF651A277B7]
+	(No symbol) [0x00007FF651A174C0]
+	(No symbol) [0x00007FF6519E12DF]
+	(No symbol) [0x00007FF6519E2451]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651AE92B4]
+	(No symbol) [0x00007FF651AE9450]
+	(No symbol) [0x00007FF651AD81FF]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 14:50:53,914 || INFO || 开始处理类别: Pet pad
+2024-11-12 14:50:53,919 || ERROR || 搜索和处理产品时出错: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=130.0.6723.117)
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B6EA]
+	(No symbol) [0x00007FF65196FCD5]
+	(No symbol) [0x00007FF651A1F167]
+	(No symbol) [0x00007FF651A381A1]
+	(No symbol) [0x00007FF651A172A3]
+	(No symbol) [0x00007FF6519E12DF]
+	(No symbol) [0x00007FF6519E2451]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651AE92B4]
+	(No symbol) [0x00007FF651AE9450]
+	(No symbol) [0x00007FF651AD81FF]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 14:50:53,923 || INFO || 开始处理类别: Pet sofa
+2024-11-12 14:50:53,925 || ERROR || 搜索和处理产品时出错: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=130.0.6723.117)
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B6EA]
+	(No symbol) [0x00007FF65196FCD5]
+	(No symbol) [0x00007FF651A1F167]
+	(No symbol) [0x00007FF651A381A1]
+	(No symbol) [0x00007FF651A172A3]
+	(No symbol) [0x00007FF6519E12DF]
+	(No symbol) [0x00007FF6519E2451]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651AE92B4]
+	(No symbol) [0x00007FF651AE9450]
+	(No symbol) [0x00007FF651AD81FF]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 14:50:53,929 || INFO || 开始处理类别: Pet hammock
+2024-11-12 14:50:53,934 || ERROR || 搜索和处理产品时出错: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=130.0.6723.117)
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B6EA]
+	(No symbol) [0x00007FF65196FCD5]
+	(No symbol) [0x00007FF651A1F167]
+	(No symbol) [0x00007FF651A381A1]
+	(No symbol) [0x00007FF651A172A3]
+	(No symbol) [0x00007FF6519E12DF]
+	(No symbol) [0x00007FF6519E2451]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651AE92B4]
+	(No symbol) [0x00007FF651AE9450]
+	(No symbol) [0x00007FF651AD81FF]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 14:50:53,937 || INFO || 开始处理类别: Foldable pet bed
+2024-11-12 14:50:53,940 || ERROR || 搜索和处理产品时出错: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=130.0.6723.117)
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B6EA]
+	(No symbol) [0x00007FF65196FCD5]
+	(No symbol) [0x00007FF651A1F167]
+	(No symbol) [0x00007FF651A381A1]
+	(No symbol) [0x00007FF651A172A3]
+	(No symbol) [0x00007FF6519E12DF]
+	(No symbol) [0x00007FF6519E2451]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651AE92B4]
+	(No symbol) [0x00007FF651AE9450]
+	(No symbol) [0x00007FF651AD81FF]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 14:50:53,944 || INFO || 开始处理类别: Waterproof pet bed
+2024-11-12 14:50:53,945 || ERROR || 搜索和处理产品时出错: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=130.0.6723.117)
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B6EA]
+	(No symbol) [0x00007FF65196FCD5]
+	(No symbol) [0x00007FF651A1F167]
+	(No symbol) [0x00007FF651A381A1]
+	(No symbol) [0x00007FF651A172A3]
+	(No symbol) [0x00007FF6519E12DF]
+	(No symbol) [0x00007FF6519E2451]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651AE92B4]
+	(No symbol) [0x00007FF651AE9450]
+	(No symbol) [0x00007FF651AD81FF]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 14:50:53,948 || INFO || 开始处理类别: pet tent
+2024-11-12 14:50:53,951 || ERROR || 搜索和处理产品时出错: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=130.0.6723.117)
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B6EA]
+	(No symbol) [0x00007FF65196FCD5]
+	(No symbol) [0x00007FF651A1F167]
+	(No symbol) [0x00007FF651A381A1]
+	(No symbol) [0x00007FF651A172A3]
+	(No symbol) [0x00007FF6519E12DF]
+	(No symbol) [0x00007FF6519E2451]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651AE92B4]
+	(No symbol) [0x00007FF651AE9450]
+	(No symbol) [0x00007FF651AD81FF]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 14:50:53,954 || INFO || 开始处理类别: Insulated pet bed
+2024-11-12 14:50:53,960 || ERROR || 搜索和处理产品时出错: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=130.0.6723.117)
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B6EA]
+	(No symbol) [0x00007FF65196FCD5]
+	(No symbol) [0x00007FF651A1F167]
+	(No symbol) [0x00007FF651A381A1]
+	(No symbol) [0x00007FF651A172A3]
+	(No symbol) [0x00007FF6519E12DF]
+	(No symbol) [0x00007FF6519E2451]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651AE92B4]
+	(No symbol) [0x00007FF651AE9450]
+	(No symbol) [0x00007FF651AD81FF]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 14:50:53,963 || INFO || 开始处理类别: Pet cooling mat
+2024-11-12 14:50:53,968 || ERROR || 搜索和处理产品时出错: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=130.0.6723.117)
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B6EA]
+	(No symbol) [0x00007FF65196FCD5]
+	(No symbol) [0x00007FF651A1F167]
+	(No symbol) [0x00007FF651A381A1]
+	(No symbol) [0x00007FF651A172A3]
+	(No symbol) [0x00007FF6519E12DF]
+	(No symbol) [0x00007FF6519E2451]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651AE92B4]
+	(No symbol) [0x00007FF651AE9450]
+	(No symbol) [0x00007FF651AD81FF]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 14:50:53,972 || INFO || 开始处理类别: Pet crate with bed
+2024-11-12 14:50:53,993 || ERROR || 搜索和处理产品时出错: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=130.0.6723.117)
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B6EA]
+	(No symbol) [0x00007FF65196FCD5]
+	(No symbol) [0x00007FF651A1F167]
+	(No symbol) [0x00007FF651A381A1]
+	(No symbol) [0x00007FF651A172A3]
+	(No symbol) [0x00007FF6519E12DF]
+	(No symbol) [0x00007FF6519E2451]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651AE92B4]
+	(No symbol) [0x00007FF651AE9450]
+	(No symbol) [0x00007FF651AD81FF]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 14:50:53,996 || INFO || 总共成功导入 0 个产品
+2024-11-12 14:50:56,157 || INFO || Chrome WebDriver已关闭

@@ -1,0 +1,118 @@
+2024-11-12 17:11:02,479 || INFO || 读取到 9 个类别
+2024-11-12 17:11:02,480 || INFO || 读取到 1 个工作表
+2024-11-12 17:11:04,589 || INFO || Chrome WebDriver启动成功
+2024-11-12 17:11:04,605 || INFO || 开始处理类别: Pet pad
+2024-11-12 17:11:10,735 || INFO || 输入搜索关键词: Pet pad
+2024-11-12 17:11:22,102 || INFO || 点击搜索按钮
+2024-11-12 17:11:22,453 || INFO || 开始加载更多产品...
+2024-11-12 17:11:46,426 || INFO || 没有更多产品可加载
+2024-11-12 17:11:46,565 || INFO || 找到 48 个产品
+2024-11-12 17:11:46,565 || INFO || 处理第 1/48 个产品
+2024-11-12 17:11:49,024 || INFO || 产品标题: Luxury 6 layer absorbent waterproof disposable training pet puppy dogs pee pads for dogs
+2024-11-12 17:11:58,966 || INFO || 处理产品详情页操作: Pet pad, Pet Beds!!!
+2024-11-12 17:11:59,100 || INFO || 点击了按钮//*[@id='addBtnCon']
+2024-11-12 17:12:01,129 || INFO || 产品已存在，不再处理当前产品
+2024-11-12 17:12:04,156 || INFO || 处理第 2/48 个产品
+2024-11-12 17:12:05,210 || INFO || 产品标题: Free Customized Logo Waterproof Wholesale Puppy Training Disposable pet Urine Pee Leak-Proof Bottom Film Wholesale Pet Pee Pad
+2024-11-12 17:12:16,215 || INFO || 处理产品详情页操作: Pet pad, Pet Beds!!!
+2024-11-12 17:12:16,474 || INFO || 点击了按钮//*[@id='addBtnCon']
+2024-11-12 17:12:18,882 || INFO || 选择Draft状态成功
+2024-11-12 17:12:27,253 || INFO || 开始处理类别选择: Pet Beds
+2024-11-12 17:12:27,271 || INFO || 下拉菜单区域已加载
+2024-11-12 17:12:27,830 || INFO || 搜索框输入完成: pet beds
+2024-11-12 17:12:28,839 || INFO || 成功选择类别: Pet Beds
+2024-11-12 17:12:39,407 || INFO || 点击Description标签
+2024-11-12 17:12:41,504 || INFO || 点击Variants签
+2024-11-12 17:12:43,649 || INFO || 选择Import all variants
+2024-11-12 17:12:45,987 || INFO || 选择价格选项
+2024-11-12 17:12:48,106 || INFO || 点击Images标签
+2024-11-12 17:12:51,614 || INFO || 点击Add to Store按钮
+2024-11-12 17:13:22,135 || ERROR || 添加到商店时出错: Message: 
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B6EA]
+	(No symbol) [0x00007FF6519EFA15]
+	(No symbol) [0x00007FF6519EFC6C]
+	(No symbol) [0x00007FF651A3BB07]
+	(No symbol) [0x00007FF651A1753F]
+	(No symbol) [0x00007FF651A388A3]
+	(No symbol) [0x00007FF651A172A3]
+	(No symbol) [0x00007FF6519E12DF]
+	(No symbol) [0x00007FF6519E2451]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651AE92B4]
+	(No symbol) [0x00007FF651AE9450]
+	(No symbol) [0x00007FF651AD81FF]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 17:13:22,321 || INFO || 关闭当前标签页
+2024-11-12 17:13:25,021 || INFO || 处理第 3/48 个产品
+2024-11-12 17:13:26,103 || INFO || 产品标题: High Absorbent Disposable puppy training pads
+2024-11-12 17:13:35,569 || INFO || 处理产品详情页操作: Pet pad, Pet Beds!!!
+2024-11-12 17:13:35,905 || INFO || 点击了按钮//*[@id='addBtnCon']
+2024-11-12 17:13:47,302 || INFO || 选择Draft状态成功
+2024-11-12 17:13:57,252 || ERROR || 处理类别选择时出错: 'NoneType' object has no attribute 'is_displayed'
+2024-11-12 17:13:57,253 || ERROR || 类别选择失败
+2024-11-12 17:13:57,356 || ERROR || 关闭标签页时出错: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=130.0.6723.117)
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B6EA]
+	(No symbol) [0x00007FF65196FCD5]
+	(No symbol) [0x00007FF651A1F167]
+	(No symbol) [0x00007FF651A266F8]
+	(No symbol) [0x00007FF651A174C0]
+	(No symbol) [0x00007FF6519E12DF]
+	(No symbol) [0x00007FF6519E2451]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651AE92B4]
+	(No symbol) [0x00007FF651AE9450]
+	(No symbol) [0x00007FF651AD81FF]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 17:13:57,365 || ERROR || 处理产品详情页时出错: Message: disconnected: not connected to DevTools
+  (failed to check if window was closed: disconnected: not connected to DevTools)
+  (Session info: chrome=130.0.6723.117)
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B6EA]
+	(No symbol) [0x00007FF651981515]
+	(No symbol) [0x00007FF6519825AF]
+	(No symbol) [0x00007FF65199BD03]
+	(No symbol) [0x00007FF65196F7BD]
+	(No symbol) [0x00007FF651A277B7]
+	(No symbol) [0x00007FF651A174C0]
+	(No symbol) [0x00007FF6519E12DF]
+	(No symbol) [0x00007FF6519E2451]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651AE92B4]
+	(No symbol) [0x00007FF651AE9450]
+	(No symbol) [0x00007FF651AD81FF]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 17:13:57,374 || ERROR || 无法返回到产品列表页
+2024-11-12 17:13:57,375 || INFO || 类别 Pet pad 处理完成，成功导入 0 个产品
+2024-11-12 17:13:57,379 || WARNING || 会话失效，尝试重新创建浏览器实例
+2024-11-12 17:13:57,385 || WARNING || 检测到无效会话，尝试重新创建浏览器实例
+2024-11-12 17:14:01,343 || INFO || 开始处理类别: Pet sofa
+2024-11-12 17:14:02,277 || ERROR || 导航到页面时出错: list index out of range
+2024-11-12 17:14:02,285 || WARNING || 检测到无效会话，尝试重新创建浏览器实例

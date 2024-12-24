@@ -1,0 +1,34 @@
+2024-11-12 14:56:10,472 || INFO || Chrome WebDriver启动成功
+2024-11-12 14:56:10,473 || INFO || 开始处理类别: Pet pad
+2024-11-12 14:56:22,113 || INFO || 开始处理类别: Pet sofa
+2024-11-12 14:56:35,749 || INFO || 开始处理类别: Pet hammock
+2024-11-12 14:56:49,995 || INFO || 开始处理类别: Foldable pet bed
+2024-11-12 14:57:01,310 || INFO || 开始处理类别: Waterproof pet bed
+2024-11-12 14:57:12,942 || INFO || 开始处理类别: pet tent
+2024-11-12 14:57:24,872 || INFO || 开始处理类别: Insulated pet bed
+2024-11-12 14:57:36,705 || INFO || 开始处理类别: Pet cooling mat
+2024-11-12 14:57:49,087 || INFO || 开始处理类别: Pet crate with bed
+2024-11-12 14:57:51,587 || ERROR || 处理类别 Pet crate with bed 时出错: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=130.0.6723.117)
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B6EA]
+	(No symbol) [0x00007FF65196FCD5]
+	(No symbol) [0x00007FF651A1F167]
+	(No symbol) [0x00007FF651A381A1]
+	(No symbol) [0x00007FF651A172A3]
+	(No symbol) [0x00007FF6519E12DF]
+	(No symbol) [0x00007FF6519E2451]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651AE92B4]
+	(No symbol) [0x00007FF651AE9450]
+	(No symbol) [0x00007FF651AD81FF]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+

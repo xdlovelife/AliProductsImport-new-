@@ -1,440 +1,484 @@
-import tkinter as tk
+import sys
 import logging
-import time
-from tkinter import ttk, simpledialog, messagebox
-from selenium import webdriver
-from selenium.webdriver.common.action_chains import ActionChains
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import *
+from PyQt6.QtGui import *
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException, TimeoutException, NoSuchWindowException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from utils import (
+    read_categories_from_excel, 
+    read_sheet_names_from_excel, 
+    open_browser,
+    process_link,
+    handle_product_detail,
+    handle_product_actions,
+    fetch_dropdown_options
+)
+import os
+import ctypes
 
-# 配置日志记录
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+class ImportifyApp(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.init_ui()
+        self.worker = None
+        self.thread = None
+        
+        # 设置日志处理
+        self.log_handler = QTextEditLogger(self.log_text)
+        logging.getLogger().addHandler(self.log_handler)
+        logging.getLogger().setLevel(logging.INFO)
 
-# 读取保存的Firefox配置文件路径
-def read_profile_path():
-    try:
-        with open("firefox_profile.txt") as file:
-            return file.read().strip()
-    except FileNotFoundError:
-        return ""
+    def init_ui(self):
+        self.setWindowTitle("阿里巴巴产品导入工具")
+        self.setMinimumSize(800, 600)  # 设置最小窗口大小
+        
+        # 设置应用图标
+        icon = QIcon("xdlovelife.ico")
+        self.setWindowIcon(icon)
+        
+        # 创建中心部件
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+        layout = QVBoxLayout(central_widget)
+        layout.setContentsMargins(10, 10, 10, 10)  # 设置边距
+        layout.setSpacing(10)  # 设置间距
+        
+        # 创建菜单栏
+        self.create_menu_bar()
+        
+        # 创建主要区域
+        self.create_main_area(layout)
+        
+        # 创建状态栏
+        self.statusBar().showMessage('就绪')
 
-# 保存有效路径到文件
-def save_profile_path(path):
-    with open("firefox_profile.txt", "w") as file:
-        file.write(path)
+    def create_menu_bar(self):
+        menubar = self.menuBar()
+        
+        # 文件菜单
+        file_menu = menubar.addMenu('文件')
+        open_action = QAction('打开Excel', self)
+        open_action.setShortcut('Ctrl+O')
+        open_action.triggered.connect(self.browse_file)
+        file_menu.addAction(open_action)
+        
+        # 设置菜单
+        settings_menu = menubar.addMenu('设置')
+        config_action = QAction('配置', self)
+        config_action.triggered.connect(self.show_settings)
+        settings_menu.addAction(config_action)
 
-# 保存分类列表到文件
-def save_categories(categories):
-    with open("categories.txt", "w") as file:
-        for category in categories:
-            file.write(f"{category}\n")
+    def create_main_area(self, layout):
+        # 文件选择区域
+        file_group = QGroupBox("Excel文件选择")
+        file_layout = QHBoxLayout()
+        self.file_path = QLineEdit()
+        self.file_path.setPlaceholderText("请选择Excel文件...")
+        browse_button = QPushButton("浏览")
+        browse_button.clicked.connect(self.browse_file)
+        file_layout.addWidget(self.file_path)
+        file_layout.addWidget(browse_button)
+        file_group.setLayout(file_layout)
+        layout.addWidget(file_group)
+        
+        # 创建分割器
+        splitter = QSplitter(Qt.Orientation.Vertical)
+        layout.addWidget(splitter)
+        
+        # 创建选项卡
+        self.tabs = QTabWidget()
+        
+        # 日志标签页
+        self.log_tab = QWidget()
+        log_layout = QVBoxLayout()
+        self.log_text = QTextEdit()
+        self.log_text.setReadOnly(True)
+        # 设置最小尺寸
+        self.log_text.setMinimumHeight(200)
+        log_layout.addWidget(self.log_text)
+        self.log_tab.setLayout(log_layout)
+        
+        # 数据预览标签页
+        self.preview_tab = QWidget()
+        preview_layout = QVBoxLayout()
+        self.preview_table = QTableWidget()
+        # 设置表格自适应大小
+        self.preview_table.horizontalHeader().setStretchLastSection(True)
+        self.preview_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
+        preview_layout.addWidget(self.preview_table)
+        self.preview_tab.setLayout(preview_layout)
+        
+        # 添加标签页
+        self.tabs.addTab(self.log_tab, "运行日志")
+        self.tabs.addTab(self.preview_tab, "数据预览")
+        splitter.addWidget(self.tabs)
+        
+        # 进度和控制区域
+        control_group = QGroupBox("控制面板")
+        control_layout = QVBoxLayout()
+        
+        # 进度信息
+        progress_info = QHBoxLayout()
+        self.progress = QProgressBar()
+        self.progress_label = QLabel("0/0")
+        progress_info.addWidget(self.progress, stretch=4)
+        progress_info.addWidget(self.progress_label, stretch=1)
+        control_layout.addLayout(progress_info)
+        
+        # 控制按钮
+        button_layout = QHBoxLayout()
+        self.start_button = QPushButton("开始导入")
+        self.stop_button = QPushButton("停止")
+        self.stop_button.setEnabled(False)
+        
+        self.start_button.clicked.connect(self.start_import)
+        self.stop_button.clicked.connect(self.stop_import)
+        
+        button_layout.addWidget(self.start_button)
+        button_layout.addWidget(self.stop_button)
+        control_layout.addLayout(button_layout)
+        
+        control_group.setLayout(control_layout)
+        splitter.addWidget(control_group)
+        
+        # 设置分割器的初始大小
+        splitter.setSizes([600, 100])
+        
+        # 设置分割器可以调整大小
+        splitter.setHandleWidth(5)
+        splitter.setChildrenCollapsible(False)
 
-# 读取分类列表从文件
-def read_categories():
-    try:
-        with open("categories.txt") as file:
-            return [line.strip() for line in file.readlines()]
-    except FileNotFoundError:
-        return []
+    def show_settings(self):
+        dialog = SettingsDialog(self)
+        dialog.exec()
 
-# 弹窗加载和验证Firefox配置文件路径
-def get_valid_profile_path():
-    profile_path = read_profile_path()
-    if profile_path:
-        confirm_reset = messagebox.askyesno("确认配置路径",
-                                            f"已设置Firefox配置文件路径为:\n{profile_path}\n\n是否确认使用该路径？\n选择否将重设路径。")
-        if confirm_reset:
-            return profile_path
+    def browse_file(self):
+        file_path, _ = QFileDialog.getOpenFileName(
+            self,
+            "选择Excel文件",
+            "",
+            "Excel Files (*.xlsx *.xls)"
+        )
+        if file_path:
+            self.file_path.setText(file_path)
+            self.load_preview_data(file_path)
 
-    while True:
-        path = simpledialog.askstring("Firefox配置文件", "请输入Firefox配置文件路径:")
-        if not path:
-            messagebox.showerror("错误", "请输入有效的路径。")
-        else:
+    def load_preview_data(self, file_path):
+        try:
+            categories = read_categories_from_excel(file_path)
+            sheet_names = read_sheet_names_from_excel(file_path)
+            
+            # 更新预览表格
+            self.preview_table.setRowCount(len(categories))
+            self.preview_table.setColumnCount(2)
+            self.preview_table.setHorizontalHeaderLabels(["产品类别", "目标分类"])
+            
+            for i, category in enumerate(categories):
+                self.preview_table.setItem(i, 0, QTableWidgetItem(category))
+                if i < len(sheet_names):
+                    self.preview_table.setItem(i, 1, QTableWidgetItem(sheet_names[i]))
+            
+            self.preview_table.resizeColumnsToContents()
+            
+        except Exception as e:
+            logging.error(f"加载预览数据时出错: {str(e)}")
+
+    def start_import(self):
+        if not self.file_path.text():
+            QMessageBox.warning(self, "警告", "请先选择Excel文件")
+            return
+            
+        self.start_button.setEnabled(False)
+        self.stop_button.setEnabled(True)
+        
+        # 创建工作线程
+        self.thread = QThread()
+        self.worker = ImportWorker(self.file_path.text())
+        self.worker.moveToThread(self.thread)
+        
+        # 连接信号
+        self.thread.started.connect(self.worker.run)
+        self.worker.finished.connect(self.thread.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
+        self.thread.finished.connect(self.thread.deleteLater)
+        self.thread.finished.connect(self.on_import_finished)
+        
+        self.worker.progress.connect(self.update_progress)
+        self.worker.total_updated.connect(self.update_total)
+        
+        # 启动线程
+        self.thread.start()
+
+    def stop_import(self):
+        if self.worker:
+            self.worker.is_running = False
+            self.stop_button.setEnabled(False)
+            logging.info("正在停止导入...")
+
+    def update_progress(self, current):
+        total = self.progress.maximum()
+        self.progress.setValue(current)
+        self.progress_label.setText(f"{current}/{total}")
+
+    def update_total(self, total):
+        self.progress.setMaximum(total)
+        self.progress_label.setText(f"0/{total}")
+
+    def on_import_finished(self):
+        self.start_button.setEnabled(True)
+        self.stop_button.setEnabled(False)
+        self.progress.setValue(0)
+        self.progress_label.setText("0/0")
+        logging.info("导入任务完成")
+
+    def closeEvent(self, event):
+        """处理窗口关闭事件"""
+        if self.thread and self.thread.isRunning():
+            self.stop_import()
+            self.thread.wait()  # 等待线程结束
+        event.accept()
+
+class ImportWorker(QObject):
+    progress = pyqtSignal(int)
+    total_updated = pyqtSignal(int)
+    finished = pyqtSignal()
+
+    def __init__(self, file_path):
+        super().__init__()
+        self.file_path = file_path
+        self.is_running = True
+
+    def run(self):
+        try:
+            # 读取设置
+            settings = QSettings('ImportifyApp', 'Settings')
+            driver_path = settings.value('driver_path', '')
+            user_data_dir = settings.value('user_data_dir', '')
+            wait_time = int(settings.value('wait_time', 10))
+
+            # 读取Excel文件
+            categories = read_categories_from_excel(self.file_path)
+            sheet_names = read_sheet_names_from_excel(self.file_path)
+            
+            total = len(categories)
+            self.total_updated.emit(total)
+            total_success_count = 0
+            
+            driver = open_browser(driver_path, user_data_dir)
+            if driver is None:
+                logging.error("无法创建浏览器实例")
+                return
+            
             try:
-                # 检查路径是否有效
-                options = webdriver.FirefoxOptions()
-                options.add_argument(f"-profile {path}")
-                driver = webdriver.Firefox(options=options)
-                driver.quit()
-                save_profile_path(path)
-                return path
-            except Exception as e:
-                messagebox.showerror("错误", f"无效的路径或配置文件: {e}")
+                url = "https://www.alibaba.com/"
+                logging.info(f"访问页面: {url}")
+                driver.get(url)
+                
+                search_bar = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, 'fy23-icbu-search-bar-inner'))
+                )
 
-# 弹窗加载可供选择的产品分类
-def input_product_category(profile_path):
-    root = tk.Tk()
-    root.title("批量输入产品分类")
-
-    # 设置窗口大小和位置
-    window_width = 500
-    window_height = 400
-    screen_width = root.winfo_screenwidth()
-    screen_height = root.winfo_screenheight()
-    x = (screen_width - window_width) // 2
-    y = (screen_height - window_height) // 2
-    root.geometry(f"{window_width}x{window_height}+{x}+{y}")
-
-    categories = read_categories()  # 从文件读取分类列表
-
-    # 更新显示产品分类列表
-    def update_category_list():
-        listbox.delete(0, tk.END)
-        for category in categories:
-            listbox.insert(tk.END, category)
-
-    # 添加分类
-    def add_category():
-        category = category_entry.get().strip()
-        if category:
-            categories.append(category)
-            update_category_list()
-            category_entry.delete(0, tk.END)  # 清空输入框内容
-
-    # 删除选定分类
-    def delete_category():
-        selection = listbox.curselection()
-        if selection:
-            index = selection[0]
-            del categories[index]
-            update_category_list()
-
-    # 创建标签和输入框
-    ttk.Label(root, text="产品分类列表").pack(pady=10)
-    listbox = tk.Listbox(root)
-    listbox.pack()
-
-    update_category_list()  # 更新显示分类列表
-
-    # 创建输入框和按钮
-    category_entry = ttk.Entry(root)
-    category_entry.pack()
-    ttk.Button(root, text="添加分类", command=add_category).pack()
-    ttk.Button(root, text="删除选定分类", command=delete_category).pack()
-
-    # 定义确认按钮的回调函数
-    def confirm_input():
-        if categories:
-            save_categories(categories)  # 保存分类列表到文件
-            root.destroy()  # 销毁主窗口
-            open_alibaba(categories, profile_path)  # 将 profile_path 和分类列表作为参数传递
-        else:
-            messagebox.showwarning("警告", "请输入至少一个分类！")
-
-    # 创建确认按钮
-    ttk.Button(root, text="开始执行", command=confirm_input).pack(pady=10)
-
-    root.mainloop()
-
-# 打开阿里巴巴并处理链接
-def open_alibaba(selected_categories, profile_path):
-    logging.info("打开阿里巴巴页面")
-    options = webdriver.FirefoxOptions()
-    options.add_argument(f"-profile {profile_path}")  # 设置Firefox配置文件路径
-    options.headless = False  # 设置为 False 可以看到浏览器操作过程
-    try:
-        browser = webdriver.Firefox(options=options)
-    except Exception as e:
-        logging.error(f"无法启动Firefox: {e}")
-        messagebox.showerror("错误", f"无法启动Firefox: {e}")
-        return
-
-    success_count = 0  # 初始化成功计数器
-
-    for category in selected_categories:
-        try:
-            success_count = process_link(browser, "https://www.alibaba.com/", category, success_count)
-        except Exception as e:
-            logging.error(f"处理分类 {category} 时发生错误: {e}")
-            # 如果出现错误，关闭浏览器，重新打开并处理
-            browser.quit()
-            browser = webdriver.Firefox(options=options)
-            success_count = process_link(browser, "https://www.alibaba.com/", category, success_count)
-
-    browser.quit()  # 处理完所有产品后关闭浏览器
-
-def process_link(browser, link, category, success_count):
-    logging.info(f"处理分类: {category}")
-    try:
-        logging.info(f"处理链接: {link}")
-        browser.get(link)
-        browser.switch_to.window(browser.window_handles[0])
-
-        # 等待搜索框加载完成
-        search_input = WebDriverWait(browser, 10).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "search-bar-input"))
-        )
-
-        # 将产品分类名称填入搜索框
-        search_input.clear()
-        search_input.send_keys(category)
-
-        # 点击搜索按钮
-        search_button = WebDriverWait(browser, 10).until(
-            EC.element_to_be_clickable((By.CLASS_NAME, "fy23-icbu-search-bar-inner-button"))
-        )
-        search_button.click()
-
-        # 等待产品列表加载完成
-        WebDriverWait(browser, 10).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "organic-list"))
-        )
-
-        # 模拟向下滚动页面，直到加载完所有产品
-        last_height = browser.execute_script("return document.body.scrollHeight")
-        while True:
-            browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(2)  # 等待加载
-            new_height = browser.execute_script("return document.body.scrollHeight")
-            if new_height == last_height:
-                break
-            last_height = new_height
-
-        # 加载完所有产品后，获取产品列表的长度并打印
-        product_list = browser.find_elements(By.CLASS_NAME, "fy23-search-card")
-        num_products = len(product_list)
-        logging.info(f"共抓取到的产品数量：{num_products}")
-
-        # 循环处理产品
-        for product in product_list:
-            # 获取产品标题
-            product_title = product.find_element(By.CLASS_NAME, "search-card-e-title")
-            logging.info(f"当前产品标题: {product_title.text}")
-
-            # 滚动到产品标题所在位置
-            scroll_to_element(browser, product_title)
-            time.sleep(1)
-            # 获取产品链接并打开
-            product_link = product.find_element(By.TAG_NAME, "a").get_attribute("href")
-            browser.execute_script(f"window.open('{product_link}')")
-            # 处理产品详情页操作
-            success_count = handle_product_detail(browser, category, success_count)
-            # 等待一段时间，可以根据实际情况调整
-            time.sleep(1)
-
-        logging.info(f"成功处理的产品数量: {success_count}")
-        return success_count
-
-    except Exception as e:
-        logging.error(f"处理链接时发生错误: {e}")
-        return success_count
-
-def handle_popup(browser):
-    try:
-        # 等待弹窗出现
-        WebDriverWait(browser, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//div[contains(text(), 'This product is already in your store, what would you like to do?')]"))
-        )
-
-        # 检查是否出现弹窗
-        popup_message = browser.find_element(By.XPATH, "//div[contains(text(), 'This product is already in your store, what would you like to do?')]")
-
-        if popup_message:
-            logging.info("检测到产品已存在的弹窗")
-
-            # 直接关闭当前产品详情页
-            browser.close()
-            logging.info("关闭了产品已存在的弹窗")
-
-    except NoSuchElementException:
-        logging.info("未检测到产品已存在的弹窗")
-    except Exception as e:
-        logging.error(f"处理弹窗时发生错误: {e}")
-
-def handle_product_detail(browser, category, success_count):
-    try:
-        # 获取所有窗口句柄
-        original_window = browser.current_window_handle
-        handles = browser.window_handles
-
-        # 获取新打开的窗口句柄
-        new_window = None
-        for window_handle in handles:
-            if window_handle != original_window:
-                new_window = window_handle
-                break
-
-        if new_window:
-            # 切换到新打开的产品详情页窗口
-            browser.switch_to.window(new_window)
-
-            # 等待产品详情页元素加载完成
-            product_title = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.TAG_NAME, "h1")))
-
-            # 滚动到产品标题位置
-            scroll_to_element(browser, product_title)
-
-            time.sleep(2)
-
-            # 处理弹窗
-            handle_popup(browser)
-
-            # 获取产品标题
-            product_title = browser.find_element(By.TAG_NAME, "h1").text
-            logging.info(f"产品详情页标题: {product_title}")
-
-            # 处理产品详情页操作，这里可以根据实际需要修改
-            success_count = handle_product_actions(browser, category, success_count)
-
-            # 等待一段时间，可以根据实际情况调整
-            time.sleep(1)
-            # 切换回原始窗口（产品搜索页）
-            browser.switch_to.window(original_window)
-        return success_count
-    except NoSuchWindowException as e:
-        logging.error(f"浏览器窗口丢失：{e}")
-        return success_count
-    except Exception as e:
-        logging.error(f"处理产品详情页时发生错误: {e}")
-        return success_count
-
-def wait_for_element_to_appear(driver, by, selector, timeout=10):
-    try:
-        WebDriverWait(driver, timeout).until(
-            EC.presence_of_element_located((by, selector))
-        )
-    except TimeoutException:
-        logging.error(f"元素未能在 {timeout} 秒内出现: {selector}")
-        raise
-
-def handle_product_actions(browser, category, success_count):
-    try:
-        add_btn_con = WebDriverWait(browser, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="addBtnCon"]')))
-        add_btn_con.click()
-        logging.info("点击了按钮//*[@id='addBtnCon']")
-
-        try:
-            element = WebDriverWait(browser, 20).until(
-                EC.presence_of_element_located((By.XPATH, '//span[@class="inactive" and text()="Draft"]'))
-            )
-            logging.info("成功加载 Draft 元素")
-            actions = ActionChains(browser)
-            actions.move_to_element(element).perform()
-            element.click()
-            logging.info("成功点击 Draft 元素")
-            time.sleep(2)
-        except Exception as e:
-            logging.error(f"等待和点击 Draft 元素时出现错误：{e}")
-
-        time.sleep(3)  # 可以根据实际情况调整等待时间
-
-        # 检查是否出现 "This product is already in your store, what would you like to do?"
-        try:
-            existing_product_msg = browser.find_element(By.XPATH,
-                                                        '//div[contains(text(), "This product is already in your store, what would you like to do?")]')
-            logging.info("产品已存在，不再处理当前产品")
-            return success_count  # 跳出函数，不再处理当前产品
-        except NoSuchElementException:
-            pass  # 如果未找到消息元素，继续后续操作
-
-        time.sleep(3)  # 可以根据实际情况调整等待时间
-
-        try:
-            # 点击 description_tab_button 按钮
-            description_tab_button = browser.find_element(By.XPATH, '//*[@id="description_tab_button"]')
-            description_tab_button.click()
-            logging.info("点击了 description_tab_button 按钮")
-            time.sleep(3)  # 等待页面加载
-
-            # 点击 Variants 按钮
-            variants_button = browser.find_element(By.CSS_SELECTOR,
-                                                   'button.accordion-tab[data-actab-group="0"][data-actab-id="2"]')
-            variants_button.click()
-            logging.info("点击了 Variants 按钮")
-
-            # 选择 Import all variants automatically 单选框
-            all_variants_radio = browser.find_element(By.ID, 'all_variants')
-            all_variants_radio.click()
-            logging.info("选择 Import all variants automatically 单选框")
-
-            time.sleep(3)  # 等待页面反应
-
-            # 选择 Select which variants to include 单选框
-            price_switch_radio = browser.find_element(By.ID, 'price_switch')
-            price_switch_radio.click()
-            logging.info("选择 Select which variants to include 单选框")
-
-            time.sleep(3)  # 等待页面反应
-        except Exception as e:
-            logging.error(f"点击 Variants 按钮时出现错误：{e}")
-
-        # 点击 Images 按钮
-        images_button = browser.find_element(By.XPATH,
-                                             '//button[@class="accordion-tab accordion-custom-tab" and @data-actab-group="0" and @data-actab-id="3"]')
-        images_button.click()
-        logging.info("点击了 Images 按钮")
-        time.sleep(3)  # 等待页面反应
-
-        add_to_store_button = browser.find_element(By.ID, 'addBtnSec')
-        scroll_to_element(browser, add_to_store_button)
-
-        add_to_store_button.click()
-        logging.info("成功点击 Add to your Store 按钮")
-
-        logging.info("等待页面加载完成")
-
-        # 等待导入过程完成，确保 importify-app-container 元素出现
-        try:
-            wait_for_element_to_appear(browser, By.ID, 'importify-app-container')
-            logging.info("产品正在导入中...")
-
-            # 等待成功消息出现
-            success_message = None
-            timeout = 180  # 设定超时时间
-            start_time = time.time()
-            while time.time() - start_time < timeout:
-                try:
-                    success_message = browser.find_element(By.XPATH,
-                                                           '//div[@class="textcontainer centeralign home-content "]/p[1]')
-                    if success_message.text == "We have successfully created the product page.":
-                        logging.info(f"产品导入成功, 共计: {success_count + 1}")
-                        success_count += 1
+                for index, category in enumerate(categories, 1):
+                    if not self.is_running:
+                        logging.info("任务被用户停止")
                         break
-                    else:
-                        logging.warning("产品正在导入中...")
-                except Exception as e:
-                    logging.warning("未检测到产品成功导入，继续等待...")
-                time.sleep(5)  # 每秒检查一次
+                        
+                    try:
+                        total_success_count += process_link(driver, url, category, sheet_names)
+                        self.progress.emit(index)
+                        
+                    except Exception as e:
+                        logging.error(f"处理类别 '{category}' 出错: {e}")
+                        continue
 
-            if not success_message or success_message.text != "We have successfully created the product page.":
-                logging.error("超时：未找到成功创建产品页面的消息")
+                logging.info(f"总共成功导入的产品数量：{total_success_count}")
+
+            finally:
+                driver.quit()  # 确保浏览器被关闭
 
         except Exception as e:
-            logging.error(f"页面加载出错: {e}")
-        time.sleep(2)
-        # 关闭当前产品详情页标签页
-        browser.close()
-        time.sleep(1)
+            logging.error(f"导入过程出错: {str(e)}")
+        finally:
+            self.finished.emit()
 
-        return success_count
+class SettingsDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.init_ui()
+        self.load_settings()
 
-    except NoSuchWindowException as e:
-        logging.error(f"浏览器窗口丢失：{e}")
-        return success_count
-    except Exception as e:
-        logging.error(f"处理产品详情页操作时发生错误: {e}")
-        return success_count
+    def get_default_user_data_dir(self):
+        """获取Chrome默认用户数据目录"""
+        if os.name == 'nt':  # Windows
+            return os.path.join(os.environ['LOCALAPPDATA'], 'Google', 'Chrome', 'User Data')
+        elif os.name == 'posix':  # macOS
+            return os.path.expanduser('~/Library/Application Support/Google/Chrome')
+        else:  # Linux
+            return os.path.expanduser('~/.config/google-chrome')
 
-def scroll_to_element(browser, element):
-    try:
-        WebDriverWait(browser, 10).until(EC.visibility_of(element))
-        browser.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", element)
-        logging.info(f"滚动到元素: {element.text}")
-    except Exception as e:
-        logging.error(f"滚动到元素时出错: {e}")
+    def init_ui(self):
+        self.setWindowTitle("设置")
+        layout = QFormLayout()
+        
+        # Chrome驱动路径组
+        driver_group = QGroupBox("ChromeDriver设置")
+        driver_layout = QVBoxLayout()
+        
+        # 自动下载选项
+        self.auto_download = QCheckBox("自动下载ChromeDriver")
+        self.auto_download.stateChanged.connect(self.toggle_driver_path)
+        driver_layout.addWidget(self.auto_download)
+        
+        # 手动选择路径
+        path_layout = QHBoxLayout()
+        self.driver_path = QLineEdit()
+        self.driver_path.setPlaceholderText("请选择ChromeDriver路径...")
+        browse_button = QPushButton("浏览")
+        browse_button.clicked.connect(self.browse_driver)
+        path_layout.addWidget(self.driver_path)
+        path_layout.addWidget(browse_button)
+        driver_layout.addLayout(path_layout)
+        
+        driver_group.setLayout(driver_layout)
+        layout.addRow(driver_group)
+        
+        # 用户数据目录组
+        user_data_group = QGroupBox("Chrome用户数据目录")
+        user_data_layout = QVBoxLayout()
+        
+        # 使用默认目录选项
+        self.use_default_dir = QCheckBox("使用默认用户数据目录")
+        self.use_default_dir.stateChanged.connect(self.toggle_user_data_dir)
+        user_data_layout.addWidget(self.use_default_dir)
+        
+        # 手动选择用户数据目录
+        user_dir_layout = QHBoxLayout()
+        self.user_data_dir = QLineEdit()
+        self.user_data_dir.setPlaceholderText("请选择用户数据目录...")
+        browse_user_dir_button = QPushButton("浏览")
+        browse_user_dir_button.clicked.connect(self.browse_user_dir)
+        user_dir_layout.addWidget(self.user_data_dir)
+        user_dir_layout.addWidget(browse_user_dir_button)
+        user_data_layout.addLayout(user_dir_layout)
+        
+        user_data_group.setLayout(user_data_layout)
+        layout.addRow(user_data_group)
+        
+        # 等待时间
+        self.wait_time = QSpinBox()
+        self.wait_time.setRange(1, 60)
+        self.wait_time.setValue(10)  # 默认值
+        layout.addRow("等待时间(秒):", self.wait_time)
+        
+        # 下载提示
+        tip_label = QLabel("提示：如果自动下载失败，请手动下载ChromeDriver并指定路径")
+        tip_label.setStyleSheet("color: gray;")
+        layout.addRow(tip_label)
+        
+        # 按钮
+        buttons = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Ok | 
+            QDialogButtonBox.StandardButton.Cancel
+        )
+        buttons.accepted.connect(self.save_settings)
+        buttons.rejected.connect(self.reject)
+        layout.addRow(buttons)
+        
+        self.setLayout(layout)
+
+    def toggle_driver_path(self, state):
+        """切换ChromeDriver路径输入状态"""
+        self.driver_path.setEnabled(not state)
+        if state:
+            self.driver_path.clear()
+
+    def browse_driver(self):
+        file_path, _ = QFileDialog.getOpenFileName(
+            self,
+            "选择ChromeDriver",
+            "",
+            "ChromeDriver (chromedriver.exe);;所有文件 (*.*)"
+        )
+        if file_path:
+            self.driver_path.setText(file_path)
+            self.auto_download.setChecked(False)
+
+    def browse_user_dir(self):
+        dir_path = QFileDialog.getExistingDirectory(
+            self,
+            "选择用户数据目录"
+        )
+        if dir_path:
+            self.user_data_dir.setText(dir_path)
+            self.use_default_dir.setChecked(False)
+
+    def toggle_user_data_dir(self, state):
+        """切换用户数据目录输入状态"""
+        self.user_data_dir.setEnabled(not state)
+        if state:
+            self.user_data_dir.setText(self.get_default_user_data_dir())
+        else:
+            self.user_data_dir.clear()
+
+    def load_settings(self):
+        settings = QSettings('ImportifyApp', 'Settings')
+        self.auto_download.setChecked(settings.value('auto_download', True, type=bool))
+        self.driver_path.setText(settings.value('driver_path', ''))
+        
+        # 加载用户数据目录设置
+        use_default = settings.value('use_default_dir', True, type=bool)
+        self.use_default_dir.setChecked(use_default)
+        if use_default:
+            self.user_data_dir.setText(self.get_default_user_data_dir())
+        else:
+            self.user_data_dir.setText(settings.value('user_data_dir', ''))
+        
+        self.wait_time.setValue(int(settings.value('wait_time', 10)))
+        self.toggle_driver_path(self.auto_download.isChecked())
+        self.toggle_user_data_dir(self.use_default_dir.isChecked())
+
+    def save_settings(self):
+        settings = QSettings('ImportifyApp', 'Settings')
+        settings.setValue('auto_download', self.auto_download.isChecked())
+        settings.setValue('driver_path', self.driver_path.text())
+        settings.setValue('use_default_dir', self.use_default_dir.isChecked())
+        settings.setValue('user_data_dir', self.user_data_dir.text())
+        settings.setValue('wait_time', self.wait_time.value())
+        self.accept()
+
+class QTextEditLogger(logging.Handler):
+    def __init__(self, widget):
+        super().__init__()
+        self.widget = widget
+        self.widget.setReadOnly(True)
+        self.setFormatter(logging.Formatter('%(asctime)s || %(message)s'))
+
+    def emit(self, record):
+        msg = self.format(record)
+        self.widget.append(msg)
 
 def main():
-    logging.info("开始主逻辑")
-    profile_path = get_valid_profile_path()
-    if not profile_path:
-        messagebox.showerror("错误", "无效的配置路径。")
-        return
+    app = QApplication(sys.argv)
+    
+    # 设置应用程序图标
+    app_icon = QIcon("xdlovelife.ico")
+    app.setWindowIcon(app_icon)
+    
+    # 设置Windows任务栏图标
+    if os.name == 'nt':  # Windows系统
+        myappid = 'mycompany.myproduct.subproduct.version'  # 任意字符串
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+    
+    # 设置应用样式
+    app.setStyle("Fusion")
+    
+    window = ImportifyApp()
+    window.show()
+    sys.exit(app.exec())
 
-    input_product_category(profile_path)
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
+

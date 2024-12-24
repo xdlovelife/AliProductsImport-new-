@@ -1,0 +1,67 @@
+2024-11-12 16:18:44,168 || INFO || 读取到 9 个类别
+2024-11-12 16:18:44,181 || INFO || 读取到 1 个工作表
+2024-11-12 16:18:46,935 || INFO || Chrome WebDriver启动成功
+2024-11-12 16:18:46,941 || INFO || 开始处理类别: Pet pad
+2024-11-12 16:18:58,671 || INFO || 输入搜索关键词: Pet pad
+2024-11-12 16:19:11,002 || INFO || 点击搜索按钮
+2024-11-12 16:19:11,422 || INFO || 开始加载更多产品...
+2024-11-12 16:19:35,257 || INFO || 没有更多产品可加载
+2024-11-12 16:19:35,288 || INFO || 找到 48 个产品
+2024-11-12 16:19:35,288 || INFO || 处理第 1/48 个产品
+2024-11-12 16:19:37,517 || INFO || 产品标题: Luxury 6 layer absorbent waterproof disposable training pet puppy dogs pee pads for dogs
+2024-11-12 16:19:48,291 || INFO || 点击Add to Import List按钮
+2024-11-12 16:20:05,780 || INFO || 产品已存在（完整消息），跳过
+2024-11-12 16:20:06,418 || ERROR || 关闭产品详情页时出错: Message: invalid session id
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B519]
+	(No symbol) [0x00007FF6519E0424]
+	(No symbol) [0x00007FF651A173A9]
+	(No symbol) [0x00007FF651A10ED8]
+	(No symbol) [0x00007FF651A100CA]
+	(No symbol) [0x00007FF651963D75]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651962837]
+	GetHandleVerifier [0x00007FF651F4AB98+4071784]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 16:20:06,423 || ERROR || 无法返回到产品列表页
+2024-11-12 16:20:06,423 || INFO || 类别 Pet pad 处理完成，成功导入 0 个产品
+2024-11-12 16:20:06,436 || WARNING || 检测到无效会话，尝试重新创建浏览器实例
+2024-11-12 16:20:10,700 || INFO || 开始处理类别: Pet sofa
+2024-11-12 16:20:17,010 || INFO || 输入搜索关键词: Pet sofa
+2024-11-12 16:20:27,807 || INFO || 点击搜索按钮
+2024-11-12 16:20:28,346 || INFO || 开始加载更多产品...
+2024-11-12 16:20:38,445 || ERROR || 滚动加载产品时出错: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=130.0.6723.117)
+Stacktrace:
+	GetHandleVerifier [0x00007FF651B6FDA5+29557]
+	(No symbol) [0x00007FF651AE2240]
+	(No symbol) [0x00007FF65199B6EA]
+	(No symbol) [0x00007FF65196FCD5]
+	(No symbol) [0x00007FF651A1F167]
+	(No symbol) [0x00007FF651A381A1]
+	(No symbol) [0x00007FF651A172A3]
+	(No symbol) [0x00007FF6519E12DF]
+	(No symbol) [0x00007FF6519E2451]
+	GetHandleVerifier [0x00007FF651E9DCBD+3363469]
+	GetHandleVerifier [0x00007FF651EE9B47+3674391]
+	GetHandleVerifier [0x00007FF651EDEAEB+3629243]
+	GetHandleVerifier [0x00007FF651C2FC66+815670]
+	(No symbol) [0x00007FF651AED6EF]
+	(No symbol) [0x00007FF651AE92B4]
+	(No symbol) [0x00007FF651AE9450]
+	(No symbol) [0x00007FF651AD81FF]
+	BaseThreadInitThunk [0x00007FFE9889257D+29]
+	RtlUserThreadStart [0x00007FFE9A3AAF08+40]
+
+2024-11-12 16:20:38,448 || ERROR || 加载更多产品失败
+2024-11-12 16:20:38,448 || INFO || 类别 Pet sofa 处理完成，成功导入 0 个产品
+2024-11-12 16:20:38,450 || WARNING || 检测到无效会话，尝试重新创建浏览器实例
