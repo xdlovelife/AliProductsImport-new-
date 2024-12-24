@@ -48,6 +48,52 @@ def get_chrome_version():
         logging.error(f"获取Chrome版本失败: {str(e)}")
     return None
 
+def get_chromedriver_from_mirrors(version):
+    """从多个镜像源尝试下载ChromeDriver"""
+    mirrors = [
+        {
+            'name': '淘宝镜像',
+            'version_url': f"https://registry.npmmirror.com/-/binary/chromedriver/{version}",
+            'download_url': lambda v: f"https://registry.npmmirror.com/-/binary/chromedriver/{v}/chromedriver_win32.zip"
+        },
+        {
+            'name': '中科大镜像',
+            'version_url': f"https://mirrors.ustc.edu.cn/chromedriver/{version}/",
+            'download_url': lambda v: f"https://mirrors.ustc.edu.cn/chromedriver/{v}/chromedriver_win32.zip"
+        },
+        {
+            'name': '官方源',
+            'version_url': "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_" + version,
+            'download_url': lambda v: f"https://chromedriver.storage.googleapis.com/{v}/chromedriver_win32.zip"
+        }
+    ]
+    
+    for mirror in mirrors:
+        try:
+            logging.info(f"尝试使用{mirror['name']}下载ChromeDriver...")
+            response = requests.get(mirror['version_url'], timeout=10)
+            
+            if response.status_code == 200:
+                if mirror['name'] == '淘宝镜像':
+                    versions = response.json()
+                    if versions:
+                        latest_version = versions[-1]
+                else:
+                    latest_version = response.text.strip()
+                
+                download_url = mirror['download_url'](latest_version)
+                logging.info(f"从{mirror['name']}下载 ChromeDriver {latest_version}")
+                
+                response = requests.get(download_url, timeout=30)
+                if response.status_code == 200:
+                    return response.content
+                    
+        except Exception as e:
+            logging.warning(f"{mirror['name']}下载失败: {str(e)}")
+            continue
+    
+    return None
+
 def download_chromedriver():
     try:
         chrome_version = get_chrome_version()
@@ -56,41 +102,26 @@ def download_chromedriver():
             
         major_version = chrome_version.split('.')[0]
         
-        # 使用淘宝镜像源下载对应版本的ChromeDriver
-        version_url = f"https://registry.npmmirror.com/-/binary/chromedriver/{major_version}"
-        version_response = requests.get(version_url)
-        if version_response.status_code != 200:
-            logging.error("无法获取ChromeDriver版本信息")
+        # 尝试从镜像下载
+        content = get_chromedriver_from_mirrors(major_version)
+        if not content:
+            logging.error("所有镜像源下载失败")
             return None
             
-        versions = version_response.json()
-        if not versions:
-            logging.error("未找到匹配的ChromeDriver版本")
-            return None
-            
-        # 获取最新的版本号
-        latest_version = versions[-1]
-        download_url = f"https://registry.npmmirror.com/-/binary/chromedriver/{latest_version}/chromedriver_win32.zip"
+        # 保存并解压
+        with open("chromedriver.zip", "wb") as f:
+            f.write(content)
         
-        logging.info(f"下载ChromeDriver版本: {latest_version}")
+        # 如果存在旧的chromedriver，先删除
+        if os.path.exists("chromedriver.exe"):
+            os.remove("chromedriver.exe")
         
-        # 下载ChromeDriver
-        response = requests.get(download_url)
-        if response.status_code == 200:
-            # 保存并解压
-            with open("chromedriver.zip", "wb") as f:
-                f.write(response.content)
+        with zipfile.ZipFile("chromedriver.zip", "r") as zip_ref:
+            zip_ref.extractall()
             
-            # 如果存在旧的chromedriver，先删除
-            if os.path.exists("chromedriver.exe"):
-                os.remove("chromedriver.exe")
-            
-            with zipfile.ZipFile("chromedriver.zip", "r") as zip_ref:
-                zip_ref.extractall()
-                
-            os.remove("chromedriver.zip")
-            logging.info("ChromeDriver下载并解压成功")
-            return "chromedriver.exe"
+        os.remove("chromedriver.zip")
+        logging.info("ChromeDriver下载并解压成功")
+        return "chromedriver.exe"
             
     except Exception as e:
         logging.error(f"下载ChromeDriver失败: {str(e)}")
@@ -105,6 +136,10 @@ def open_browser(driver_path=None, user_data_dir=None):
         # 添加其他必要的选项
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-dev-shm-usage')
+        # 添加代理支持
+        proxy = os.environ.get('HTTP_PROXY') or os.environ.get('HTTPS_PROXY')
+        if proxy:
+            options.add_argument(f'--proxy-server={proxy}')
         
         settings = QSettings('ImportifyApp', 'Settings')
         auto_download = settings.value('auto_download', True, type=bool)

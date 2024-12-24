@@ -29,7 +29,7 @@
 
 1. 准备Excel文件
    - 第一列：产品链接或搜索关键词
-   - Sheet名称：对应的Shopify产品分类
+   - Sheet名称：对应的产品分类名称
 
 2. 配置设置
    - 点击"设置"菜单
@@ -46,8 +46,7 @@
 
 1. 首次使用需要：
    - 安装Chrome浏览器
-   - 登录阿里巴巴账号
-   - 登录Shopify账号
+   - 安装IMportify插件并链接到对应的客户端
 
 2. 导入过程中：
    - 请勿关闭浏览器
@@ -55,8 +54,22 @@
    - 保持网络连接稳定
 
 3. 常见问题：
-   - 如果自动下载ChromeDriver失败，请手动下载对应版本
+   - 如果自动下载ChromeDriver失败，可以：
+     1. 使用淘宝镜像手动下载：
+        - 访问 `https://registry.npmmirror.com/binary.html?path=chromedriver/`
+        - 选择与Chrome版本匹配的ChromeDriver版本
+        - 下载对应的zip文件并解压
+     2. 或使用官方地址（需要代理）：
+        - 访问 `https://chromedriver.chromium.org/downloads`
+        - 下载对应版本
+   - 如果出现网络问题，建议使用代理或VPN
    - 如果出现登录问题，请检查用户数据目录设置
+
+4. 使用中国镜像：
+   - 程序默认使用淘宝镜像源下载ChromeDriver
+   - 如果自动下载失败，可以手动从淘宝镜像下载
+   - ChromeDriver淘宝镜像地址：`https://registry.npmmirror.com/binary.html?path=chromedriver/`
+   - 下载后将chromedriver.exe放在程序目录下即可
 
 ## 更新日志
 
@@ -65,6 +78,7 @@
 - 支持基本的产品导入功能
 - 提供图形用户界面
 - 支持自动下载ChromeDriver
+- 集成淘宝镜像源支持
 
 ## 技术支持
 
