@@ -14,7 +14,9 @@ from utils import (
     process_link,
     handle_product_detail,
     handle_product_actions,
-    fetch_dropdown_options
+    fetch_dropdown_options,
+    load_progress,
+    save_progress
 )
 import os
 import ctypes
@@ -250,9 +252,14 @@ class ImportWorker(QObject):
         super().__init__()
         self.file_path = file_path
         self.is_running = True
+        self.processed_products = []
+        self.current_category = ''
 
     def run(self):
         try:
+            # 加载之前的进度
+            self.processed_products, self.current_category = load_progress()
+            
             # 读取设置
             settings = QSettings('ImportifyApp', 'Settings')
             driver_path = settings.value('driver_path', '')
@@ -262,6 +269,16 @@ class ImportWorker(QObject):
             # 读取Excel文件
             categories = read_categories_from_excel(self.file_path)
             sheet_names = read_sheet_names_from_excel(self.file_path)
+            
+            # 如果有上次的进度，从上次的位置继续
+            if self.current_category:
+                try:
+                    start_index = categories.index(self.current_category)
+                    categories = categories[start_index:]
+                    sheet_names = sheet_names[start_index:]
+                    logging.info(f"从上次的位置继续: {self.current_category}")
+                except ValueError:
+                    logging.warning(f"找不到上次的类别: {self.current_category}，从头开始")
             
             total = len(categories)
             self.total_updated.emit(total)
@@ -285,9 +302,17 @@ class ImportWorker(QObject):
                     if not self.is_running:
                         logging.info("任务被用户停止")
                         break
+                    
+                    # 保存当前进度
+                    self.current_category = category
+                    save_progress(self.processed_products, self.current_category)
                         
                     try:
-                        total_success_count += process_link(driver, url, category, sheet_names)
+                        if category not in self.processed_products:
+                            total_success_count += process_link(driver, url, category, sheet_names)
+                            self.processed_products.append(category)
+                        else:
+                            logging.info(f"跳过已处理的类别: {category}")
                         self.progress.emit(index)
                         
                     except Exception as e:
@@ -298,6 +323,13 @@ class ImportWorker(QObject):
 
             finally:
                 driver.quit()  # 确保浏览器被关闭
+                # 如果任务完成，清除进度文件
+                if self.is_running:
+                    try:
+                        os.remove('progress.json')
+                        logging.info("任务完成，清除进度文件")
+                    except:
+                        pass
 
         except Exception as e:
             logging.error(f"导入过程出错: {str(e)}")

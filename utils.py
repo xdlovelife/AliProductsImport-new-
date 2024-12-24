@@ -516,3 +516,26 @@ def fetch_dropdown_options(driver, sheet_name):
     except Exception as e:
         logging.error(f"处理下拉选项时出错: {e}")
         raise  # 抛出异常以便上层函数知道下拉选项处理失败
+
+def load_progress():
+    """加载之前的导入进度"""
+    try:
+        if os.path.exists('progress.json'):
+            with open('progress.json', 'r') as f:
+                progress = json.load(f)
+                return progress.get('processed_products', []), progress.get('last_category', '')
+    except Exception as e:
+        logging.error(f"加载进度文件失败: {str(e)}")
+    return [], ''
+
+def save_progress(processed_products, current_category):
+    """保存当前导入进度"""
+    try:
+        progress = {
+            'processed_products': processed_products,
+            'last_category': current_category
+        }
+        with open('progress.json', 'w') as f:
+            json.dump(progress, f)
+    except Exception as e:
+        logging.error(f"保存进度文件失败: {str(e)}")
