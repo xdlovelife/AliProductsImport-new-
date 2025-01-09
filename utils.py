@@ -18,8 +18,8 @@ from PyQt6.QtCore import QSettings
 def read_categories_from_excel(file_path):
     try:
         # 读取Excel文件
-        df = pd.read_excel(file_path)
-        # 假设类别在第一列，可以根据实际情况调整
+        df = pd.read_excel(file_path, header=None)  # 不使用第一行作为表头
+        # 获取第一列的所有值，包括第一行
         categories = df.iloc[:, 0].dropna().tolist()
         return categories if categories else []
     except Exception as e:
@@ -129,61 +129,45 @@ def download_chromedriver():
 
 def open_browser(driver_path=None, user_data_dir=None):
     try:
-        options = webdriver.ChromeOptions()
-        if user_data_dir:
-            options.add_argument(f'user-data-dir={user_data_dir}')
+        # 优先使用指定的ChromeDriver路径
+        default_driver_path = r'D:\chromedriver-win64\chromedriver.exe'
+        chrome_driver_path = driver_path if driver_path else default_driver_path
         
-        # 添加其他必要的选项
-        options.add_argument('--no-sandbox')
-        options.add_argument('--disable-dev-shm-usage')
-        # 添加代理支持
-        proxy = os.environ.get('HTTP_PROXY') or os.environ.get('HTTPS_PROXY')
-        if proxy:
-            options.add_argument(f'--proxy-server={proxy}')
-        
-        settings = QSettings('ImportifyApp', 'Settings')
-        auto_download = settings.value('auto_download', True, type=bool)
-        
-        # 如果设置为自动下载或没有指定driver_path
-        if auto_download or not driver_path:
-            logging.info("尝试自动下载ChromeDriver...")
-            downloaded_driver = download_chromedriver()
-            if downloaded_driver:
-                driver_path = downloaded_driver
-            elif not driver_path:  # 如果下载失败且没有手动指定路径
-                logging.error("无法自动下载ChromeDriver，请手动指定路径")
-                return None
-        
-        if not os.path.exists(driver_path):
-            logging.error(f"ChromeDriver路径不存在: {driver_path}")
+        if not os.path.exists(chrome_driver_path):
+            logging.error(f"ChromeDriver不存在于路径: {chrome_driver_path}")
             return None
             
-        service = Service(driver_path)
-        driver = webdriver.Chrome(service=service, options=options)
+        # 设置Chrome选项
+        chrome_options = Options()
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--disable-dev-shm-usage')
+        chrome_options.add_argument('--disable-gpu')
+        chrome_options.add_argument('--disable-features=TranslateUI')
+        chrome_options.add_argument('--disable-translate')
+        chrome_options.add_argument('--lang=en-US')
+        chrome_options.add_argument('--remote-allow-origins=*')
+        
+        # 如果提供了用户数据目录，则添加相应选项
+        if user_data_dir and os.path.exists(user_data_dir):
+            chrome_options.add_argument(f'--user-data-dir={user_data_dir}')
+            
+        # 创建Service对象
+        service = Service(executable_path=chrome_driver_path)
+        
+        # 创建WebDriver实例
+        driver = webdriver.Chrome(service=service, options=chrome_options)
         logging.info("成功创建Chrome浏览器实例")
         return driver
         
     except Exception as e:
-        logging.error(f"创建浏览器实例时出错: {str(e)}")
-        if "This version of ChromeDriver only supports Chrome version" in str(e):
-            logging.info("检测到版本不匹配，尝试重新下载...")
-            if settings.value('auto_download', True, type=bool):
-                driver_path = download_chromedriver()
-                if driver_path:
-                    try:
-                        service = Service(driver_path)
-                        driver = webdriver.Chrome(service=service, options=options)
-                        logging.info("使用新下载的ChromeDriver成功创建浏览器实例")
-                        return driver
-                    except Exception as new_e:
-                        logging.error(f"使用新下载的ChromeDriver仍然失败: {str(new_e)}")
-            else:
-                logging.error("ChromeDriver版本不匹配，请手动下载正确版本")
+        logging.error(f"创建浏览器实例失败: {str(e)}")
         return None
 
-def process_link(driver, link, category, sheet_name):
+def process_link(driver, category, sheet_name):
     max_retries = 3
     retry_count = 0
+    
+    logging.info(f"开始处理类别: {category}, 目标分类: {sheet_name}")
     
     while retry_count < max_retries:
         try:
@@ -192,23 +176,193 @@ def process_link(driver, link, category, sheet_name):
                 driver.current_url
             except:
                 logging.error("浏览器已关闭，需要重新初始化")
+                # 检查是否处于暂停状态
+                if hasattr(process_link, 'is_paused') and process_link.is_paused:
+                    logging.info("系统处于暂停状态，等待继续...")
+                    while process_link.is_paused:
+                        time.sleep(1)
                 driver = open_browser()
                 if not driver:
                     return 0
             
-            # 访问链接并切换到主窗口
-            logging.info(f"访问页面: {link}")
-            driver.get(link)
+            # 验证sheet_name
+            if not sheet_name:
+                logging.error(f"类别 '{category}' 没有对应的目标分类")
+                return 0
+            
+            # 访问阿里巴巴主页
+            url = "https://www.alibaba.com/"
+            logging.info(f"访问页面: {url}")
+            driver.get(url)
+            
+            # 等待页面加载完成
+            try:
+                WebDriverWait(driver, 20).until(
+                    lambda d: d.execute_script('return document.readyState') == 'complete'
+                )
+                logging.info("页面加载完成")
+            except TimeoutException:
+                logging.error("页面加载超时")
+                return 0
+                
             driver.switch_to.window(driver.window_handles[0])
             
-            # 处理搜索和产品列表 - 传递sheet_name参数
-            success_count = handle_product_detail(driver, category, sheet_name)
-            if success_count is None:
+            # 等待主要元素出现
+            try:
+                WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, 'fy23-icbu-search-bar-inner'))
+                )
+                logging.info("搜索栏加载完成")
+            except TimeoutException:
+                logging.error("搜索栏加载超时")
+                return 0
+            
+            # 处理搜索和产品列表
+            try:
+                # 等待搜索框加载
+                logging.info("等待搜索框加载...")
+                search_input = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, 'input.search-bar-input.util-ellipsis'))
+                )
+                
+                # 确保搜索框可以交互
+                WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.CSS_SELECTOR, 'input.search-bar-input.util-ellipsis'))
+                )
+                
+                # 清除搜索框并输入
+                search_input.clear()
+                time.sleep(1)  # 等待清除完成
+                search_input.send_keys(category)
+                time.sleep(1)  # 等待输入完成
+                
+                # 验证输入是否成功
+                if search_input.get_attribute('value') != category:
+                    logging.error(f"搜索关键词输入失败，预期: {category}, 实际: {search_input.get_attribute('value')}")
+                    return 0
+                    
+                logging.info(f"输入搜索关键词: {category}")
+                
+                # 点击搜索按钮
+                search_button = driver.find_element(By.CSS_SELECTOR, 'button.fy23-icbu-search-bar-inner-button')
+                search_button.click()
+                logging.info("点击搜索按钮")
+                
+                # 等待搜索结果加载
+                try:
+                    # 等待加载动画消失
+                    WebDriverWait(driver, 10).until_not(
+                        EC.presence_of_element_located((By.CLASS_NAME, "loading-mask"))
+                    )
+                    logging.info("搜索结果加载中...")
+                    
+                    # 等待搜索结果出现
+                    WebDriverWait(driver, 20).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, "organic-list"))
+                    )
+                    logging.info("搜索结果加载完成")
+                    
+                    # 等待一下确保所有元素都加载完成
+                    time.sleep(3)
+                    
+                    # 验证是否在搜索结果页面
+                    current_url = driver.current_url
+                    if "alibaba.com/trade/search" not in current_url:
+                        logging.error("未能正确跳转到搜索结果页面")
+                        return 0
+                        
+                except TimeoutException:
+                    logging.error("等待搜索结果超时")
+                    return 0
+                
+                # 滚动加载所有产品
+                logging.info("开始滚动加载更多产品...")
+                last_height = driver.execute_script("return document.body.scrollHeight")
+                scroll_attempts = 0
+                max_scrolls = 3  # 限制滚动次数
+                
+                while scroll_attempts < max_scrolls:
+                    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                    time.sleep(1)
+                    new_height = driver.execute_script("return document.body.scrollHeight")
+                    if new_height == last_height:
+                        break
+                    last_height = new_height
+                    scroll_attempts += 1
+                    logging.info(f"完成第 {scroll_attempts} 次滚动")
+                
+                # 获取产品列表
+                product_list = driver.find_elements(By.CLASS_NAME, "fy23-search-card")
+                num_products = len(product_list)
+                logging.info(f"找到 {num_products} 个产品")
+                
+                if num_products == 0:
+                    logging.warning(f"类别 '{category}' 没有找到任何产品")
+                    return 0
+                
+                # 处理每个产品
+                success_count = 0
+                
+                for product in product_list:
+                    try:
+                        # 获取产品标题和URL
+                        product_title = product.find_element(By.CLASS_NAME, "search-card-e-title")
+                        product_url = product.find_element(By.TAG_NAME, "a").get_attribute("href")
+                        
+                        logging.info(f"当前产品标题: {product_title.text}")
+                        
+                        # 打开新窗口
+                        driver.execute_script(f"window.open('{product_url}')")
+                        
+                        # 获取所有窗口句柄
+                        original_window = driver.current_window_handle
+                        new_window = [handle for handle in driver.window_handles if handle != original_window][0]
+                        
+                        # 切换到新窗口
+                        driver.switch_to.window(new_window)
+                        
+                        # 等待产品详情页加载
+                        product_title = WebDriverWait(driver, 60).until(
+                            EC.presence_of_element_located((By.TAG_NAME, "h1"))
+                        )
+                        
+                        # 处理产品详情页操作
+                        current_sheet_name = sheet_name
+                        if isinstance(sheet_name, list):
+                            if sheet_name:  # 确保列表不为空
+                                current_sheet_name = sheet_name[0]
+                            else:
+                                logging.error("sheet_name列表为空")
+                                current_sheet_name = None
+                                
+                        result = handle_product_actions(driver, category, success_count, current_sheet_name)
+                        
+                        if result > success_count:
+                            success_count = result
+                        
+                        # 关闭新窗口并切回原窗口
+                        driver.close()
+                        driver.switch_to.window(original_window)
+                        
+                    except Exception as e:
+                        logging.error(f"处理产品时出错: {str(e)}")
+                        try:
+                            driver.close()
+                            driver.switch_to.window(original_window)
+                        except:
+                            pass
+                        continue
+                
+                return success_count
+                
+            except Exception as e:
+                logging.error(f"处理产品列表时出错: {str(e)}")
                 retry_count += 1
+                if retry_count >= max_retries:
+                    return 0
+                time.sleep(2)
                 continue
                 
-            return success_count
-            
         except Exception as e:
             logging.error(f"处理类别 '{category}' 出错: {str(e)}")
             retry_count += 1
@@ -227,202 +381,248 @@ def process_link(driver, link, category, sheet_name):
     
     return 0
 
-def handle_product_detail(driver, category, sheet_name):
-    try:
-        # 等待搜索框加载
-        search_input = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, 'input.search-bar-input.util-ellipsis'))
-        )
-        search_input.clear()
-        search_input.send_keys(category)
-        
-        # 点击搜索按钮
-        search_button = driver.find_element(By.CSS_SELECTOR, 'button.fy23-icbu-search-bar-inner-button')
-        search_button.click()
-        
-        # 等待产品列表加载
-        WebDriverWait(driver, 20).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "organic-list"))
-        )
-        
-        # 滚动加载所有产品
-        last_height = driver.execute_script("return document.body.scrollHeight")
-        scroll_attempts = 0
-        max_scrolls = 3  # 限制滚动次数
-        
-        while scroll_attempts < max_scrolls:
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(1)
-            new_height = driver.execute_script("return document.body.scrollHeight")
-            if new_height == last_height:
-                break
-            last_height = new_height
-            scroll_attempts += 1
-        
-        # 获取产品列表
-        product_list = driver.find_elements(By.CLASS_NAME, "fy23-search-card")
-        num_products = len(product_list)
-        logging.info(f"找到 {num_products} 个产品")
-        
-        # 处理每个产品
-        success_count = 0
-        for product in product_list:
-            try:
-                # 获取产品标题
-                product_title = product.find_element(By.CLASS_NAME, "search-card-e-title")
-                logging.info(f"当前产品标题: {product_title.text}")
-                
-                # 获取产品链接并打开
-                product_link = product.find_element(By.TAG_NAME, "a").get_attribute("href")
-                driver.execute_script(f"window.open('{product_link}')")
-                
-                # 获取所有窗口句柄
-                original_window = driver.current_window_handle
-                new_window = [handle for handle in driver.window_handles if handle != original_window][0]
-                
-                # 切换到新窗口
-                driver.switch_to.window(new_window)
-                
-                # 等待产品详情页加载
-                product_title = WebDriverWait(driver, 60).until(
-                    EC.presence_of_element_located((By.TAG_NAME, "h1"))
-                )
-                
-                # 处理产品详情页操作 - 传递sheet_name参数
-                success_count = handle_product_actions(driver, category, success_count, sheet_name)
-                
-                # 关闭新窗口并切回原窗口
-                driver.close()
-                driver.switch_to.window(original_window)
-                
-            except Exception as e:
-                logging.error(f"处理产品时出错: {str(e)}")
-                try:
-                    driver.close()
-                    driver.switch_to.window(original_window)
-                except:
-                    pass
-                continue
-        
-        return success_count
-        
-    except Exception as e:
-        logging.error(f"处理产品详情时出错: {str(e)}")
-        return 0
-
 def handle_product_actions(driver, category, success_count, sheet_name):
     try:
         logging.info(f"处理产品详情页操作: {category}, {sheet_name}")
         
         # 点击添加按钮
-        add_btn_con = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="addBtnCon"]')))
-        add_btn_con.click()
-        logging.info("点击了添加按钮")
+        max_retries = 3
+        for retry in range(max_retries):
+            try:
+                add_btn_con = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.XPATH, '//*[@id="addBtnCon"]')))
+                add_btn_con.click()
+                logging.info("点击了添加按钮")
+                break
+            except Exception as e:
+                if retry == max_retries - 1:
+                    logging.error(f"点击添加按钮失败: {str(e)}")
+                    return success_count
+                time.sleep(2)
 
         # 处理Draft元素
         try:
-            draft_element = WebDriverWait(driver, 20).until(
+            # 等待Draft元素可见和可点击，减少等待时间
+            draft_element = WebDriverWait(driver, 5).until(
                 EC.presence_of_element_located((By.XPATH, '//span[@class="inactive" and text()="Draft"]'))
             )
+            WebDriverWait(driver, 3).until(
+                EC.element_to_be_clickable((By.XPATH, '//span[@class="inactive" and text()="Draft"]'))
+            )
             logging.info("成功加载 Draft 元素")
-            actions = ActionChains(driver)
-            actions.move_to_element(draft_element).perform()
-            draft_element.click()
+            
+            # 使用JavaScript点击，更可靠
+            driver.execute_script("arguments[0].click();", draft_element)
             logging.info("成功点击 Draft 元素")
-            time.sleep(2)
+            time.sleep(1)  # 减少等待时间
         except Exception as e:
             logging.error(f"等待和点击 Draft 元素时出错：{e}")
             return success_count
 
         # 检查区域限制
         try:
-            WebDriverWait(driver, 10).until(
+            # 减少等待时间到3秒，因为区域限制信息通常会很快显示
+            region_restriction = WebDriverWait(driver, 3).until(
                 EC.presence_of_element_located((By.XPATH, '//div[contains(text(), "Sorry, this product can\'t be shipped to your region.")]'))
             )
-            logging.info("检测到产品无法配送到当前区域，跳过处理")
-            return success_count
+            if region_restriction.is_displayed():
+                logging.info("检测到产品无法配送到当前区域，跳过处理")
+                return success_count
         except TimeoutException:
             logging.info("未检测到区域限制消息，继续处理")
 
-        # 检查产品是否已存在
+        # 检查产品是否已存在（同样减少等待时间）
         try:
+            WebDriverWait(driver, 3).until(
+                EC.presence_of_element_located((By.XPATH, '//div[@class="textcontainer centeralign home-content "]'))
+            )
             success_message = driver.find_element(By.XPATH, '//div[@class="textcontainer centeralign home-content "]/p[1]')
             if success_message.text == "This product is already in your store, what would you like to do?":
                 logging.info("产品已存在，不再处理")
                 return success_count
-        except NoSuchElementException:
+        except (TimeoutException, NoSuchElementException):
             pass
 
+        # 检查sheet_name是否有效
+        if not sheet_name:
+            logging.error("没有有效的目标分类，跳过类别选择")
+            return success_count
+
         # 选择类别
-        select_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//button[@class="ms-choice"]'))
-        )
-        logging.info("等待并点击选择按钮")
-        select_button.click()
-
-        # 处理下拉选项并等待完成
         try:
-            fetch_dropdown_options(driver, sheet_name)
-        except Exception as e:
-            logging.error(f"选择类别失败: {e}")
-            return success_count
+            # 首先检查当前选择的类别
+            try:
+                current_selection = WebDriverWait(driver, 5).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, 'button.ms-choice span'))
+                )
+                if current_selection.text.strip() == sheet_name:
+                    logging.info(f"当前已选择正确的类别: {sheet_name}，直接进入下一步")
+                    # 直接点击描述标签
+                    try:
+                        description_tab = WebDriverWait(driver, 10).until(
+                            EC.presence_of_element_located((By.XPATH, '//*[@id="description_tab_button"]'))
+                        )
+                        time.sleep(1)  # 等待一下确保元素完全加载
+                        
+                        # 使用JavaScript点击
+                        driver.execute_script("arguments[0].click();", description_tab)
+                        logging.info("已点击描述标签")
+                        
+                        # 等待一下确保切换完成
+                        time.sleep(2)
+                    except Exception as e:
+                        logging.error(f"点击描述标签失败: {str(e)}")
+                        return success_count
+                else:
+                    # 等待并点击选择按钮
+                    for retry in range(max_retries):
+                        try:
+                            select_button = WebDriverWait(driver, 10).until(
+                                EC.element_to_be_clickable((By.XPATH, '//button[@class="ms-choice"]'))
+                            )
+                            select_button.click()
+                            logging.info("等待并点击选择按钮")
+                            break
+                        except Exception as e:
+                            if retry == max_retries - 1:
+                                raise
+                            time.sleep(2)
 
-        # 不需要再点击描述标签，因为已经在fetch_dropdown_options中处理了
-        time.sleep(3)
+                    # 处理下拉选项并等待完成
+                    try:
+                        fetch_dropdown_options(driver, sheet_name)
+                    except ValueError as ve:
+                        logging.error(f"选择类别失败: {ve}")
+                        return success_count
+                    except Exception as e:
+                        logging.error(f"选择类别失败: {e}")
+                        return success_count
 
-        # 处理变体
-        try:
-            variants_button = driver.find_element(By.CSS_SELECTOR, 'button.accordion-tab[data-actab-group="0"][data-actab-id="2"]')
-            variants_button.click()
-            logging.info("点击了变体按钮")
+                    time.sleep(3)
+            except Exception as e:
+                logging.error(f"检查当前选择时出错: {e}")
+                return success_count
 
-            # 选择变体选项
-            all_variants_radio = driver.find_element(By.ID, 'all_variants')
-            all_variants_radio.click()
-            time.sleep(3)
-
-            price_switch_radio = driver.find_element(By.ID, 'price_switch')
-            price_switch_radio.click()
-            time.sleep(3)
-        except Exception as e:
-            logging.error(f"处理变体时出错：{e}")
-            return success_count
-
-        # 处理图片
-        images_button = driver.find_element(By.XPATH, '//button[@class="accordion-tab accordion-custom-tab" and @data-actab-group="0" and @data-actab-id="3"]')
-        images_button.click()
-        logging.info("点击了图片按钮")
-        time.sleep(3)
-
-        # 添加到商店
-        add_to_store_button = driver.find_element(By.ID, 'addBtnSec')
-        driver.execute_script("arguments[0].scrollIntoView(true);", add_to_store_button)
-        add_to_store_button.click()
-        logging.info("点击了添加到商店按钮")
-
-        # 等待导入完成
-        try:
-            WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.ID, 'importify-app-container'))
-            )
-            logging.info("产品正在导入中...")
-
-            # 等待成功消息
-            timeout = 100
-            start_time = time.time()
-            while time.time() - start_time < timeout:
+            # 处理变体
+            try:
+                # 首先点击Variants按钮
                 try:
-                    success_message = driver.find_element(By.XPATH, '//div[@class="textcontainer centeralign home-content "]/p[1]')
-                    if success_message.text == "We have successfully created the product page.":
-                        logging.info(f"产品导入成功, 总数: {success_count + 1}")
-                        success_count += 1
-                        break
-                except:
-                    time.sleep(5)
+                    variants_button = WebDriverWait(driver, 10).until(
+                        EC.element_to_be_clickable((By.XPATH, '//button[@class="accordion-tab accordion-custom-tab" and @data-actab-group="0" and @data-actab-id="2"]'))
+                    )
+                    variants_button.click()
+                    logging.info("点击了Variants按钮")
+                    time.sleep(2)  # 等待变体面板展开
+                except Exception as e:
+                    logging.error(f"点击Variants按钮时出错：{e}")
+                    return success_count
+
+                # 点击"Select which variants to include"按钮
+                try:
+                    # 等待radio按钮可见和可点击
+                    select_variants_radio = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.ID, 'price_switch'))
+                    )
+                    
+                    # 确保按钮在视图中
+                    driver.execute_script("arguments[0].scrollIntoView(true);", select_variants_radio)
+                    time.sleep(1)  # 等待滚动完成
+                    
+                    # 使用JavaScript点击radio按钮
+                    driver.execute_script("arguments[0].click();", select_variants_radio)
+                    logging.info("选择了'Select which variants to include'选项")
+                    time.sleep(2)  # 等待变体选择界面加载
+                except Exception as e:
+                    logging.error(f"选择变体选项时出错：{e}")
+                    return success_count
+
+                # 处理变体选择
+                try:
+                    # 等待变体表格完全加载
+                    WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.ID, 'var_price'))
+                    )
+                    time.sleep(2)  # 等待表格完全渲染
+
+                    # 只取消第一个之外的其他变体
+                    try:
+                        variant_checkboxes = driver.find_elements(By.CSS_SELECTOR, '.include_variant')
+                        for i, checkbox in enumerate(variant_checkboxes):
+                            if i > 0 and checkbox.is_selected():  # 跳过第一个变体，只取消其他选中的变体
+                                driver.execute_script("arguments[0].click();", checkbox)
+                                time.sleep(0.5)
+                        logging.info("已取消第一个之外的其他变体")
+                        
+                        # 确保第一个变体被选中
+                        first_variant = variant_checkboxes[0]
+                        if not first_variant.is_selected():
+                            driver.execute_script("arguments[0].click();", first_variant)
+                            logging.info("已选中第一个变体")
+                            
+                    except Exception as e:
+                        logging.error(f"处理变体选择时出错：{e}")
+
+                except Exception as e:
+                    logging.error(f"处理变体时出错：{e}")
+                    return success_count
+
+            except Exception as e:
+                logging.error(f"处理变体时出错：{e}")
+                return success_count
+
+            # 处理图片
+            try:
+                images_button = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.XPATH, '//button[@class="accordion-tab accordion-custom-tab" and @data-actab-group="0" and @data-actab-id="3"]'))
+                )
+                images_button.click()
+                logging.info("点击了图片按钮")
+                time.sleep(2)
+            except Exception as e:
+                logging.error(f"处理图片时出错：{e}")
+                return success_count
+
+            # 添加到商店
+            try:
+                add_to_store_button = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.ID, 'addBtnSec'))
+                )
+                driver.execute_script("arguments[0].scrollIntoView(true);", add_to_store_button)
+                time.sleep(1)  # 等待滚动完成
+                add_to_store_button.click()
+                logging.info("点击了添加到商店按钮")
+
+                # 等待导入完成
+                WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.ID, 'importify-app-container'))
+                )
+                logging.info("产品正在导入中...")
+
+                # 等待成功消息
+                success = False
+                timeout = 100
+                start_time = time.time()
+                while time.time() - start_time < timeout:
+                    try:
+                        success_message = WebDriverWait(driver, 5).until(
+                            EC.presence_of_element_located((By.XPATH, '//div[@class="textcontainer centeralign home-content "]/p[1]'))
+                        )
+                        if success_message.text == "We have successfully created the product page.":
+                            success_count += 1
+                            logging.info(f"产品导入成功, 总数: {success_count}")
+                            success = True
+                            break
+                    except:
+                        time.sleep(5)
+                
+                if not success:
+                    logging.warning("等待成功消息超时")
+
+            except Exception as e:
+                logging.error(f"添加到商店时出错: {e}")
 
         except Exception as e:
-            logging.error(f"导入过程出错: {e}")
+            logging.error(f"选择类别按钮时出错: {e}")
 
         return success_count
 
@@ -432,110 +632,82 @@ def handle_product_actions(driver, category, success_count, sheet_name):
 
 def fetch_dropdown_options(driver, sheet_name):
     try:
+        # 处理sheet_name为空列表或None的情况
+        if not sheet_name:
+            logging.error("sheet_name为空，无法选择类别")
+            raise ValueError("sheet_name不能为空")
+            
         # 如果sheet_name是列表，取第一个元素
         if isinstance(sheet_name, list):
+            if not sheet_name:  # 如果是空列表
+                logging.error("sheet_name列表为空，无法选择类别")
+                raise ValueError("sheet_name列表不能为空")
             sheet_name = sheet_name[0]
             
         logging.info(f"处理下拉选项: {sheet_name}")
 
-        # 等待下拉菜单加载
-        dropdown = WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located((By.CLASS_NAME, 'ms-drop'))
-        )
+        try:
+            # 等待下拉菜单完全加载
+            dropdown = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CLASS_NAME, 'ms-drop'))
+            )
+            time.sleep(1)  # 额外等待以确保完全加载
 
-        # 查找并填写搜索框
-        search_box = dropdown.find_element(By.CSS_SELECTOR, '.ms-search input[type="text"]')
-        search_box.clear()
-        search_box.send_keys(sheet_name.lower())
-        
-        # 等待搜索结果加载
-        time.sleep(2)
+            # 查找并填写搜索框
+            search_box = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, '.ms-search input[type="text"]'))
+            )
+            
+            # 清除搜索框并输入
+            search_box.clear()
+            time.sleep(0.5)
+            search_box.send_keys(sheet_name.lower())
+            time.sleep(2)  # 等待搜索结果
 
-        # 取消现有选择
-        driver.execute_script("""
-            var checkboxes = document.querySelectorAll('input[data-name="selectItem"]');
-            checkboxes.forEach(function(checkbox) {
-                if (checkbox.checked) {
-                    checkbox.click();
-                }
-            });
-        """)
-        
-        # 等待取消选择完成
-        time.sleep(1)
+            # 选择匹配的选项
+            target_text = sheet_name.lower().strip()
+            
+            # 获取所有可见的选项
+            options = WebDriverWait(driver, 5).until(
+                EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.ms-drop li:not(.hide) span'))
+            )
+            
+            if not options:
+                logging.warning(f"未找到任何匹配的选项: {sheet_name}")
+                raise Exception("没有找到任何可选择的选项")
 
-        # 选择匹配的选项
-        selected = False
-        max_attempts = 3
-        attempt = 0
-        
-        while not selected and attempt < max_attempts:
-            try:
-                # 获取所有可见的选项
-                options = WebDriverWait(driver, 5).until(
-                    EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.ms-drop li:not(.hide) span'))
-                )
-                
-                # 遍历选项寻找最佳匹配
-                target_text = sheet_name.lower().strip()
-                for option in options:
-                    option_text = option.text.lower().strip()
-                    if option_text == target_text or target_text in option_text:
-                        # 找到匹配的选项，点击对应的checkbox
+            # 找到完全匹配的选项
+            for option in options:
+                option_text = option.text.lower().strip()
+                if option_text == target_text:
+                    try:
                         checkbox = option.find_element(By.XPATH, './preceding-sibling::input[@type="checkbox"]')
-                        driver.execute_script("arguments[0].click();", checkbox)
-                        selected = True
-                        logging.info(f"成功选择类别: {option_text}")
-                        
-                        # 直接点击描述标签，不关闭下拉菜单
-                        description_tab = WebDriverWait(driver, 5).until(
-                            EC.element_to_be_clickable((By.XPATH, '//*[@id="description_tab_button"]'))
-                        )
-                        description_tab.click()
-                        logging.info("直接进入描述标签")
-                        break
-                
-                if not selected:
-                    attempt += 1
-                    if attempt == max_attempts:
-                        logging.error(f"无法找到匹配的类别: {sheet_name}")
-                        # 记录所有可用选项供调试
-                        available_options = [opt.text for opt in options]
-                        logging.info(f"可用选项: {available_options}")
-                    time.sleep(2)
-                    
-            except Exception as e:
-                attempt += 1
-                if attempt == max_attempts:
-                    logging.error(f"选择类别时出错: {str(e)}")
-                time.sleep(2)
+                        if not checkbox.is_selected():
+                            driver.execute_script("arguments[0].click();", checkbox)
+                            logging.info(f"成功选择类别: {option.text}")
+                            time.sleep(1)
+                            break
+                    except Exception as e:
+                        logging.error(f"选择选项时出错: {str(e)}")
+                        raise
 
-        if not selected:
-            raise Exception("未能成功选择类别")
+            # 点击描述标签
+            description_tab = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, '//*[@id="description_tab_button"]'))
+            )
+            time.sleep(1)  # 等待一下确保元素完全加载
+            
+            # 使用JavaScript点击
+            driver.execute_script("arguments[0].click();", description_tab)
+            logging.info("已点击描述标签")
+            
+            # 等待一下确保切换完成
+            time.sleep(2)
+
+        except Exception as e:
+            logging.error(f"处理下拉选项时出错: {e}")
+            raise
 
     except Exception as e:
         logging.error(f"处理下拉选项时出错: {e}")
-        raise  # 抛出异常以便上层函数知道下拉选项处理失败
-
-def load_progress():
-    """加载之前的导入进度"""
-    try:
-        if os.path.exists('progress.json'):
-            with open('progress.json', 'r') as f:
-                progress = json.load(f)
-                return progress.get('processed_products', []), progress.get('last_category', '')
-    except Exception as e:
-        logging.error(f"加载进度文件失败: {str(e)}")
-    return [], ''
-
-def save_progress(processed_products, current_category):
-    """保存当前导入进度"""
-    try:
-        progress = {
-            'processed_products': processed_products,
-            'last_category': current_category
-        }
-        with open('progress.json', 'w') as f:
-            json.dump(progress, f)
-    except Exception as e:
-        logging.error(f"保存进度文件失败: {str(e)}")
+        raise  # 抛出异常以便上层函数知道下拉选项处理失败 
