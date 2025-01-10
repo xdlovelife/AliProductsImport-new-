@@ -20,16 +20,11 @@ import time
 class ImportifyApp(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.init_ui()
+        self.logger = None
         self.worker = None
         self.thread = None
-        
-        # 设置日志处理
-        self.log_handler = QTextEditLogger(self.log_text)
-        logging.getLogger().addHandler(self.log_handler)
-        logging.getLogger().setLevel(logging.INFO)
-        
-        # 加载上次的Excel文件路径
+        self.is_closing = False
+        self.init_ui()
         self.load_last_excel_path()
 
     def init_ui(self):
@@ -55,6 +50,11 @@ class ImportifyApp(QMainWindow):
         
         # 创建状态栏
         self.statusBar().showMessage('就绪')
+
+        # 初始化日志处理器
+        self.logger = QTextEditLogger(self.log_text)
+        logging.getLogger().addHandler(self.logger)
+        logging.getLogger().setLevel(logging.INFO)
 
     def create_menu_bar(self):
         menubar = self.menuBar()
@@ -215,6 +215,7 @@ class ImportifyApp(QMainWindow):
         self.worker.progress.connect(self.update_progress)
         self.worker.total_updated.connect(self.update_total)
         self.worker.status_changed.connect(self.update_pause_button)
+        self.worker.log_message.connect(self.log_message)
         
         # 启动线程
         self.thread.start()
@@ -250,10 +251,59 @@ class ImportifyApp(QMainWindow):
 
     def closeEvent(self, event):
         """处理窗口关闭事件"""
-        if self.thread and self.thread.isRunning():
-            self.worker.is_running = False
-            self.thread.wait()  # 等待线程结束
-        event.accept()
+        if self.is_closing:
+            event.accept()
+            return
+            
+        self.is_closing = True
+        event.ignore()
+        
+        # 禁用所有控件防止用户操作
+        self.setEnabled(False)
+        self.statusBar().showMessage("正在关闭程序...")
+        
+        def cleanup():
+            try:
+                # 停止日志处理器
+                if self.logger:
+                    self.logger.stop()
+                    logging.getLogger().removeHandler(self.logger)
+                
+                # 停止工作线程
+                if self.worker:
+                    self.worker.stop()
+                
+                # 等待线程结束
+                if self.thread and self.thread.isRunning():
+                    self.thread.quit()
+                    self.thread.wait(100)
+                    
+                # 确保浏览器关闭
+                if self.worker and self.worker.driver:
+                    try:
+                        self.worker.driver.quit()
+                    except:
+                        pass
+                    
+            except Exception as e:
+                logging.error(f"清理资源时出错: {str(e)}")
+            finally:
+                # 确保程序退出
+                QTimer.singleShot(0, self.force_quit)
+        
+        # 在新线程中执行清理
+        cleanup_thread = QThread()
+        cleanup_worker = QObject()
+        cleanup_worker.moveToThread(cleanup_thread)
+        cleanup_thread.started.connect(cleanup)
+        cleanup_thread.start()
+
+    def force_quit(self):
+        """强制退出程序"""
+        try:
+            QApplication.quit()
+        except:
+            sys.exit(0)
 
     def load_last_excel_path(self):
         """加载上次使用的Excel文件路径"""
@@ -268,73 +318,89 @@ class ImportifyApp(QMainWindow):
         settings = QSettings('ImportifyApp', 'Settings')
         settings.setValue('last_excel_path', file_path)
 
+    def log_message(self, message):
+        logging.info(message)
+
 class ImportWorker(QObject):
     progress = pyqtSignal(int)
     total_updated = pyqtSignal(int)
     finished = pyqtSignal()
-    status_changed = pyqtSignal(bool)  # True表示暂停，False表示继续
+    status_changed = pyqtSignal(bool)
+    log_message = pyqtSignal(str)
 
     def __init__(self, file_path):
         super().__init__()
         self.file_path = file_path
         self.is_running = True
         self.is_paused = False
+        self.driver = None
+        
+    def stop(self):
+        """停止工作线程"""
+        self.is_running = False
+        self.is_paused = False
+        
+        # 确保浏览器被关闭
+        if self.driver:
+            try:
+                self.driver.close()
+                self.driver.quit()
+            except:
+                pass
+            finally:
+                self.driver = None
+                
+        # 发送完成信号
+        self.finished.emit()
+
+    def emit_log(self, message):
+        self.log_message.emit(message)
 
     def pause(self):
         self.is_paused = True
-        # 设置全局暂停状态
         from utils import process_link
         process_link.is_paused = True
         self.status_changed.emit(True)
-        logging.info("导入任务已暂停")
+        self.emit_log("导入任务已暂停")
 
     def resume(self):
         self.is_paused = False
-        # 清除全局暂停状态
         from utils import process_link
         process_link.is_paused = False
         self.status_changed.emit(False)
-        logging.info("导入任务继续进行")
+        self.emit_log("导入任务继续进行")
 
     def run(self):
         try:
-            # 读取设置
+            if not self.is_running:
+                return
+
             settings = QSettings('ImportifyApp', 'Settings')
             driver_path = settings.value('driver_path', '')
             user_data_dir = settings.value('user_data_dir', '')
             wait_time = int(settings.value('wait_time', 10))
 
-            # 读取Excel文件
             categories = read_categories_from_excel(self.file_path)
             sheet_names = read_sheet_names_from_excel(self.file_path)
             
-            if not categories:
-                logging.error("没有找到有效的类别")
+            if not self.is_running:
                 return
                 
-            if not sheet_names:
-                logging.error("没有找到有效的目标分类")
+            if not categories or not sheet_names:
+                logging.error("没有找到有效的数据")
                 return
                 
-            logging.info(f"总共读取到 {len(categories)} 个类别")
-            logging.info(f"类别列表: {categories}")
-            logging.info(f"目标分类列表: {sheet_names}")
-            
-            # 使用第一个sheet_name作为所有类别的目标分类
             target_sheet_name = sheet_names[0]
-            logging.info(f"使用 '{target_sheet_name}' 作为所有类别的目标分类")
-            
             total = len(categories)
             self.total_updated.emit(total)
-            total_success_count = 0
             
-            # 创建浏览器实例
-            driver = None
             max_browser_retries = 3
             for retry in range(max_browser_retries):
+                if not self.is_running:
+                    return
                 try:
-                    driver = open_browser(driver_path, user_data_dir)
-                    if driver:
+                    self.driver = open_browser(driver_path, user_data_dir)
+                    if self.driver:
                         break
                 except Exception as e:
                     logging.error(f"创建浏览器实例失败 (尝试 {retry + 1}/{max_browser_retries}): {str(e)}")
@@ -342,70 +408,40 @@ class ImportWorker(QObject):
                         raise
                     time.sleep(2)
             
-            if driver is None:
-                logging.error("无法创建浏览器实例")
+            if not self.driver or not self.is_running:
                 return
-            
+
             try:
                 url = "https://www.alibaba.com/"
-                logging.info(f"访问页面: {url}")
-                driver.get(url)
+                self.driver.get(url)
                 
-                search_bar = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.CLASS_NAME, 'fy23-icbu-search-bar-inner'))
-                )
-
-                # 遍历处理每个类别
                 for index, category in enumerate(categories, 1):
                     if not self.is_running:
-                        logging.info("任务被用户停止")
                         break
 
-                    # 检查是否暂停
-                    while self.is_paused:
-                        time.sleep(1)
-                        if not self.is_running:  # 如果在暂停时被停止
-                            break
+                    while self.is_paused and self.is_running:
+                        time.sleep(0.5)
                     
-                    if not self.is_running:  # 再次检查是否被停止
+                    if not self.is_running:
                         break
-                    
-                    logging.info(f"正在处理第 {index}/{len(categories)} 个类别: {category}")
                     
                     try:
-                        success_count = process_link(driver, category, target_sheet_name)
-                        if success_count > 0:
-                            total_success_count += success_count
-                            logging.info(f"成功处理类别 '{category}'，当前总成功数: {total_success_count}")
-                        else:
-                            logging.warning(f"处理类别 '{category}' 未成功导入任何产品")
-                        
-                        self.progress.emit(index)
-                        
+                        process_link(self.driver, category, target_sheet_name)
                     except Exception as e:
-                        logging.error(f"处理类别 '{category}' 出错: {e}")
-                        # 尝试重新初始化浏览器
-                        try:
-                            driver.quit()
-                        except:
-                            pass
-                            
-                        driver = open_browser(driver_path, user_data_dir)
-                        if not driver:
-                            logging.error("重新创建浏览器实例失败，终止处理")
+                        logging.error(f"处理类别出错: {str(e)}")
+                        if not self.is_running:
                             break
-                            
-                        driver.get(url)
                         continue
-
-                # 输出最终统计信息
-                logging.info(f"处理完成，共处理 {len(categories)} 个类别，成功导入 {total_success_count} 个产品")
+                        
+                    self.progress.emit(index)
 
             finally:
-                try:
-                    driver.quit()  # 确保浏览器被关闭
-                except:
-                    pass
+                if self.driver:
+                    try:
+                        self.driver.quit()
+                    except:
+                        pass
+                    self.driver = None
 
         except Exception as e:
             logging.error(f"导入过程出错: {str(e)}")
@@ -557,36 +593,37 @@ class SettingsDialog(QDialog):
         settings.setValue('wait_time', self.wait_time.value())
         self.accept()
 
-class QTextEditLogger(logging.Handler):
+class QTextEditLogger(logging.Handler, QObject):
     def __init__(self, widget):
         super().__init__()
+        QObject.__init__(self)
         self.widget = widget
         self.widget.setReadOnly(True)
         self.setFormatter(logging.Formatter('%(asctime)s || %(message)s'))
         
-        # 创建定时器用于更新日志
         self.update_timer = QTimer()
         self.update_timer.timeout.connect(self.update_log)
-        self.update_timer.start(100)  # 每100毫秒更新一次
+        self.update_timer.start(100)
         self.pending_records = []
+        self.is_closing = False
+
+    def stop(self):
+        self.is_closing = True
+        self.update_timer.stop()
+        self.pending_records.clear()
 
     def emit(self, record):
-        msg = self.format(record)
-        # 将消息添加到待处理列表
-        self.pending_records.append(msg)
+        if not self.is_closing:
+            msg = self.format(record)
+            self.pending_records.append(msg)
 
     def update_log(self):
-        if self.pending_records:
-            # 批量处理所有待处理的记录
+        if self.pending_records and not self.is_closing:
             for msg in self.pending_records:
                 self.widget.append(msg)
-            
-            # 强制滚动到底部
             self.widget.verticalScrollBar().setValue(
                 self.widget.verticalScrollBar().maximum()
             )
-            
-            # 清空待处理列表
             self.pending_records.clear()
 
 def main():

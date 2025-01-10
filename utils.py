@@ -341,16 +341,50 @@ def process_link(driver, category, sheet_name):
                             success_count = result
                         
                         # 关闭新窗口并切回原窗口
-                        driver.close()
-                        driver.switch_to.window(original_window)
+                        try:
+                            # 直接切换回原窗口
+                            driver.switch_to.window(original_window)
+                            
+                            # 关闭其他所有窗口，只保留原窗口
+                            for handle in driver.window_handles:
+                                if handle != original_window:
+                                    driver.switch_to.window(handle)
+                                    driver.close()
+                            
+                            # 最后确保回到原窗口
+                            driver.switch_to.window(original_window)
+                            
+                        except Exception as e:
+                            logging.error(f"处理窗口关闭时出错: {str(e)}")
+                            # 如果出错，尝试切换到任何可用窗口
+                            try:
+                                if driver.window_handles:
+                                    driver.switch_to.window(driver.window_handles[0])
+                            except:
+                                pass
+                            continue
                         
                     except Exception as e:
                         logging.error(f"处理产品时出错: {str(e)}")
                         try:
-                            driver.close()
-                            driver.switch_to.window(original_window)
-                        except:
-                            pass
+                            # 检查当前窗口是否还存在
+                            try:
+                                driver.current_url
+                                driver.close()
+                            except:
+                                pass
+                            
+                            # 尝试切换回原窗口
+                            try:
+                                driver.switch_to.window(original_window)
+                            except:
+                                # 如果切换失败，尝试切换到任何可用窗口
+                                available_windows = driver.window_handles
+                                if available_windows:
+                                    driver.switch_to.window(available_windows[0])
+                            
+                        except Exception as close_error:
+                            logging.error(f"清理窗口时出错: {close_error}")
                         continue
                 
                 return success_count
