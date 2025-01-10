@@ -385,12 +385,29 @@ def handle_product_actions(driver, category, success_count, sheet_name):
     try:
         logging.info(f"处理产品详情页操作: {category}, {sheet_name}")
         
+        # 检查窗口是否存在
+        def check_window():
+            try:
+                driver.current_url
+                return True
+            except:
+                logging.error("窗口已关闭，需要重新处理")
+                return False
+
         # 点击添加按钮
         max_retries = 3
         for retry in range(max_retries):
             try:
+                if not check_window():
+                    return success_count
+                    
                 add_btn_con = WebDriverWait(driver, 10).until(
                     EC.element_to_be_clickable((By.XPATH, '//*[@id="addBtnCon"]')))
+                    
+                # 再次检查窗口
+                if not check_window():
+                    return success_count
+                    
                 add_btn_con.click()
                 logging.info("点击了添加按钮")
                 break
@@ -399,18 +416,33 @@ def handle_product_actions(driver, category, success_count, sheet_name):
                     logging.error(f"点击添加按钮失败: {str(e)}")
                     return success_count
                 time.sleep(2)
+                
+                # 检查窗口是否还存在
+                if not check_window():
+                    return success_count
 
         # 处理Draft元素
         try:
+            if not check_window():
+                return success_count
+                
             # 等待Draft元素可见和可点击，减少等待时间
             draft_element = WebDriverWait(driver, 5).until(
                 EC.presence_of_element_located((By.XPATH, '//span[@class="inactive" and text()="Draft"]'))
             )
+            
+            if not check_window():
+                return success_count
+                
             WebDriverWait(driver, 3).until(
                 EC.element_to_be_clickable((By.XPATH, '//span[@class="inactive" and text()="Draft"]'))
             )
             logging.info("成功加载 Draft 元素")
             
+            # 再次检查窗口
+            if not check_window():
+                return success_count
+                
             # 使用JavaScript点击，更可靠
             driver.execute_script("arguments[0].click();", draft_element)
             logging.info("成功点击 Draft 元素")
